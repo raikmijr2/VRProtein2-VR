@@ -1,0 +1,9 @@
+﻿<Solution>
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="HTC.ViveInputUtility.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="HTC.ViveInputUtility.Editor.csproj" />
+  <Project Path="Pcx.Editor.csproj" />
+  <Project Path="UMolPlayModeTests.csproj" />
+  <Project Path="Pcx.csproj" />
+</Solution>

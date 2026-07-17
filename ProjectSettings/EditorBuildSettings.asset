@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Scenes/MainScene_VR_Desktop_VIU.unity
+    guid: 4ff6f5a6d29e6e14f9f93a763441f7d4
+  - enabled: 1
+    path: Assets/Scenes/Scenes/MainUIScene.unity
+    guid: 4a7d4dff89fe5a047b1df4cdf2a07d32
+  - enabled: 1
+    path: Assets/Scenes/Scenes/MainUIScene_Stereo.unity
+    guid: a8e84ac199f1a944b96a1c8cb779e0e4
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: dd87bf863e3d78c4eac7519732fcdc9b, type: 2}
+  m_UseUCBPForAssetBundles: 0

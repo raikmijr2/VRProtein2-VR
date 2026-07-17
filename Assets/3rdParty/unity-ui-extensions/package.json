@@ -1,0 +1,11 @@
+{
+  "name": "com.unity.uiextensions",
+  "version": "1.0.0",
+  "displayName": "Unity UI Extensions",
+  "description": "Unity UI Extensions is a project that was initiated by the community to extend the toolset provided by Unity's own UI System.",
+  "unity": "2019.4",
+  "author": {
+    "name": "Unity Technologies",
+    "url": "https://unity.com"
+  }
+}

@@ -1,0 +1,131 @@
+﻿using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System.Linq;
+
+namespace SimpleFileBrowser
+{
+	public class FileBrowserItem : ListItem, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+	{
+		#region Constants
+		private const float DOUBLE_CLICK_TIME = 0.5f;
+		private const float DOUBLE_CLICK_THRESHOLD = 0.1f;
+		#endregion
+
+		#region Variables
+		protected FileBrowser fileBrowser;
+
+		[SerializeField]
+		private Image background;
+
+		[SerializeField]
+		private Image icon;
+
+		[SerializeField]
+		private Text nameText;
+
+		private float prevTouchTime = Mathf.NegativeInfinity;
+		#endregion
+
+		#region Properties
+		private RectTransform m_transform;
+		public RectTransform TransformComponent
+		{
+			get
+			{
+				if( m_transform == null )
+					m_transform = (RectTransform) transform;
+
+				return m_transform;
+			}
+		}
+
+		public string Name { get { return nameText.text; } }
+		public bool IsDirectory { get; private set; }
+		#endregion
+
+		#region Initialization Functions
+		public void SetFileBrowser( FileBrowser fileBrowser )
+		{
+			this.fileBrowser = fileBrowser;
+		}
+
+		public void SetFile( Sprite icon, string name, bool isDirectory )
+		{
+			this.icon.sprite = icon;
+			nameText.text = name;
+
+			IsDirectory = isDirectory;
+		}
+		#endregion
+
+		#region Pointer Events
+		public void OnPointerClick( PointerEventData eventData )
+		{
+			if( FileBrowser.SingleClickMode )
+			{
+				fileBrowser.OnItemSelected( this );
+				fileBrowser.OnItemOpened( this );
+			}
+			else
+			{
+				float timeclick = Time.realtimeSinceStartup - prevTouchTime;
+				if( timeclick < DOUBLE_CLICK_TIME && timeclick > DOUBLE_CLICK_THRESHOLD)
+				{
+					if(fileBrowser.SelectedFilePositions.Count != 0 && fileBrowser.SelectedFilePositions.Last() == Position ){
+						fileBrowser.OnItemOpened( this );
+					}
+
+					prevTouchTime = Mathf.NegativeInfinity;
+				}
+				else if(timeclick > DOUBLE_CLICK_THRESHOLD)
+				{
+					fileBrowser.OnItemSelected( this );
+					prevTouchTime = Time.realtimeSinceStartup;
+				}
+			}
+		}
+
+		public void OnPointerEnter( PointerEventData eventData )
+		{
+#if UNITY_EDITOR || ( !UNITY_ANDROID && !UNITY_IOS )
+			if(!fileBrowser.SelectedFilePositions.Contains(Position)){
+				background.color = fileBrowser.hoveredFileColor;
+			}
+#endif
+		}
+
+		public void OnPointerExit( PointerEventData eventData )
+		{
+#if UNITY_EDITOR || ( !UNITY_ANDROID && !UNITY_IOS )
+			if(!fileBrowser.SelectedFilePositions.Contains(Position)){
+				background.color = fileBrowser.normalFileColor;
+			}
+#endif
+		}
+		#endregion
+
+		#region Other Events
+		public void Select()
+		{
+			background.color = fileBrowser.selectedFileColor;
+		}
+
+		public void Deselect()
+		{
+			background.color = fileBrowser.normalFileColor;
+		}
+
+		public void SetHidden( bool isHidden )
+		{
+			Color c = icon.color;
+			c.a = isHidden ? 0.5f : 1f;
+			icon.color = c;
+
+			c = nameText.color;
+			c.a = isHidden ? 0.55f : 1f;
+			nameText.color = c;
+		}
+		#endregion
+	}
+}
