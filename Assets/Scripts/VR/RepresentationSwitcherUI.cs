@@ -43,6 +43,16 @@ public class RepresentationSwitcherUI : MonoBehaviour {
     string currentRep = "c";
     bool   applyToSelection = false;  // false = toda la proteína, true = solo la selección
 
+    bool   surfaceOverlayActive = false;
+    const string surfaceOverlaySel = "surface_overlay";
+    static readonly Color btnSurface       = new Color(0.00f, 0.52f, 0.52f, 1f); // teal = overlay activo
+
+    // Residuos de disolvente/iones a excluir del "ligando" (igual que PDBLoaderUI)
+    static readonly HashSet<string> ligandSolventResidues = new HashSet<string> {
+        "HOH", "WAT", "TIP", "TIP3", "SOL", "NA", "CL", "MG", "ZN", "CA",
+        "K", "NA+", "CL-", "MG2+", "ZN2+", "CA2+", "FE", "MN", "NI", "CU"
+    };
+
     // Estado de extracción: representa qué reps fueron modificadas y sus átomos originales
     List<(UnityMolRepresentation rep, List<UnityMolAtom> originalAtoms, bool wasEnabled)> modifiedReps
         = new List<(UnityMolRepresentation, List<UnityMolAtom>, bool)>();
@@ -55,6 +65,13 @@ public class RepresentationSwitcherUI : MonoBehaviour {
     Text      modeBtnLabel;
     Text      exportBtnLabel;
     Image     exportBtnImg;
+
+    RectTransform panelRT;
+    GameObject    colorSectionGO;
+    bool          colorSectionExpanded = false;
+    Text          colorToggleBtnLabel;
+
+    const float colorToggleH = 44f;
 
     static readonly Color btnSelection = new Color(0.80f, 0.67f, 0.00f, 1f); // amarillo = selección activa
 
@@ -108,11 +125,12 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         float modeH  = 44f;  // altura del botón de modo al fondo
         float resetH = 44f;  // altura del botón de reset
         float panelW = cols * btnW + (cols + 1) * pad;
-        float panelH = titleH + rows * btnH + (rows + 1) * pad + resetH + pad + modeH + pad;
+        float panelH = titleH + rows * btnH + (rows + 1) * pad + resetH + pad + modeH + pad + colorToggleH + pad;
 
         RectTransform canvasRT = canvasGO.GetComponent<RectTransform>();
         canvasRT.sizeDelta = new Vector2(panelW, panelH);
         canvasGO.transform.localScale = Vector3.one * 0.003f;
+        panelRT = canvasRT;
 
         // ── Fondo ─────────────────────────────────────────────────────────
         AddImage(canvasGO.transform, "Background", bgColor,
@@ -173,8 +191,8 @@ public class RepresentationSwitcherUI : MonoBehaviour {
             resetRT.anchorMin = new Vector2(0f,  0f);
             resetRT.anchorMax = new Vector2(0.5f, 0f);
             resetRT.pivot     = new Vector2(0.5f, 0f);
-            resetRT.offsetMin = new Vector2(pad,      modeH + pad * 2);
-            resetRT.offsetMax = new Vector2(-halfGap, modeH + pad * 2 + resetH);
+            resetRT.offsetMin = new Vector2(pad,      modeH + pad * 3 + colorToggleH);
+            resetRT.offsetMax = new Vector2(-halfGap, modeH + pad * 3 + colorToggleH + resetH);
             var resetLabelGO = new GameObject("Label");
             resetLabelGO.transform.SetParent(resetGO.transform, false);
             Text resetLabel      = resetLabelGO.AddComponent<Text>();
@@ -205,8 +223,8 @@ public class RepresentationSwitcherUI : MonoBehaviour {
             exportRT.anchorMin = new Vector2(0.5f, 0f);
             exportRT.anchorMax = new Vector2(1f,   0f);
             exportRT.pivot     = new Vector2(0.5f, 0f);
-            exportRT.offsetMin = new Vector2(halfGap, modeH + pad * 2);
-            exportRT.offsetMax = new Vector2(-pad,    modeH + pad * 2 + resetH);
+            exportRT.offsetMin = new Vector2(halfGap, modeH + pad * 3 + colorToggleH);
+            exportRT.offsetMax = new Vector2(-pad,    modeH + pad * 3 + colorToggleH + resetH);
             var exportLabelGO = new GameObject("Label");
             exportLabelGO.transform.SetParent(exportGO.transform, false);
             exportBtnLabel           = exportLabelGO.AddComponent<Text>();
@@ -238,8 +256,8 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         modeRT.anchorMin = new Vector2(0f, 0f);
         modeRT.anchorMax = new Vector2(1f, 0f);
         modeRT.pivot     = new Vector2(0.5f, 0f);
-        modeRT.offsetMin = new Vector2(pad,  pad);
-        modeRT.offsetMax = new Vector2(-pad, pad + modeH);
+        modeRT.offsetMin = new Vector2(pad,  pad * 2 + colorToggleH);
+        modeRT.offsetMax = new Vector2(-pad, pad * 2 + colorToggleH + modeH);
         var modeLabelGO = new GameObject("Label");
         modeLabelGO.transform.SetParent(modeGO.transform, false);
         modeBtnLabel = modeLabelGO.AddComponent<Text>();
@@ -253,6 +271,12 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         modeLabelRT.anchorMin = Vector2.zero;
         modeLabelRT.anchorMax = Vector2.one;
         modeLabelRT.offsetMin = modeLabelRT.offsetMax = Vector2.zero;
+
+        // Botón para colapsar/expandir el panel de coloreado
+        BuildColorToggleButton(canvasGO.transform, panelW, pad);
+
+        // Sub-panel de coloreado (oculto por defecto, flota bajo el panel principal)
+        BuildColorSection(canvasGO.transform, panelW, panelH, pad, btnH);
 
         // Marcar cartoon como activo por defecto
         MarkActive("c");
@@ -317,9 +341,17 @@ public class RepresentationSwitcherUI : MonoBehaviour {
     }
 
     void OnRepButtonClicked(string repCode) {
-        if (UnityMolMain.getStructureManager().loadedStructures.Count == 0) {
+        if (UnityMolMain.getStructureManager().loadedStructures.Count == 0) return;
+
+        // Surface es un overlay transparente independiente — toggle, no cambia la rep principal
+        if (repCode == "s") {
+            surfaceOverlayActive = !surfaceOverlayActive;
+            if (surfaceOverlayActive) ShowSurfaceOverlay();
+            else HideSurfaceOverlay();
+            UpdateSurfaceBtnVisual();
             return;
         }
+
         currentRep = repCode;
 
         if (applyToSelection) {
@@ -327,13 +359,129 @@ public class RepresentationSwitcherUI : MonoBehaviour {
             if (selM != null && selM.currentSelection != null && selM.currentSelection.Count > 0)
                 ApplyRepToSelection(selM.clickSelectionName, repCode);
             else
-                APIPython.showAs(repCode);
+                ApplyRepRespectingLigand(repCode);
         } else {
             RestoreExtraction();
-            APIPython.showAs(repCode);
+            ApplyRepRespectingLigand(repCode);
         }
 
+        // showAs() borra todas las reps — re-mostrar surface overlay si estaba activo
+        if (surfaceOverlayActive) ShowSurfaceOverlay();
+
         MarkActive(repCode);
+    }
+
+    void ShowSurfaceOverlay() {
+        var sm = UnityMolMain.getStructureManager();
+        if (sm == null || sm.loadedStructures.Count == 0) return;
+
+        var selMgr = UnityMolMain.getSelectionManager();
+
+        // Construir selección proteica (no-HET) si no existe ya
+        if (!selMgr.selections.ContainsKey(surfaceOverlaySel)) {
+            var proteinAtoms = new List<UnityMolAtom>();
+            foreach (var s in sm.loadedStructures)
+                foreach (var a in s.currentModel.allAtoms)
+                    if (!a.isHET) proteinAtoms.Add(a);
+            if (proteinAtoms.Count == 0) return;
+            selMgr.selections[surfaceOverlaySel] = new UnityMolSelection(proteinAtoms, surfaceOverlaySel);
+        }
+
+        APIPython.showSelection(surfaceOverlaySel, "s");
+        APIPython.showSelection(surfaceOverlaySel, "s"); // garantiza Show() en la rep recién creada
+        APIPython.setTransparentSurface(surfaceOverlaySel, 0.35f);
+    }
+
+    void HideSurfaceOverlay() {
+        APIPython.hideSelection(surfaceOverlaySel, "s");
+    }
+
+    void UpdateSurfaceBtnVisual() {
+        for (int i = 0; i < repTypes.Length; i++) {
+            if (repTypes[i].code != "s" || buttons == null || buttons[i] == null) continue;
+            Color col = surfaceOverlayActive ? btnSurface : btnNormal;
+            Image img = buttons[i].GetComponent<Image>();
+            img.color = col;
+            ColorBlock cb = buttons[i].colors;
+            cb.normalColor      = col;
+            cb.highlightedColor = Color.Lerp(col, Color.white, 0.25f);
+            cb.pressedColor     = Color.Lerp(col, Color.black, 0.35f);
+            buttons[i].colors = cb;
+            break;
+        }
+    }
+
+    // Aplica repCode a toda la molécula pero preserva HyperBall en átomos HETATM (ligandos).
+    // Si no hay ligando, equivale a APIPython.showAs(repCode).
+    void ApplyRepRespectingLigand(string repCode) {
+        var sm = UnityMolMain.getStructureManager();
+
+        // ¿Alguna estructura tiene ligando real (no disolvente)?
+        bool anyLigand = false;
+        foreach (var s in sm.loadedStructures) {
+            foreach (var a in s.currentModel.allAtoms) {
+                if (a.isHET && !ligandSolventResidues.Contains(a.residue.name)) {
+                    anyLigand = true;
+                    break;
+                }
+            }
+            if (anyLigand) break;
+        }
+
+        // Aplicar la rep a todo (limpia representaciones anteriores)
+        APIPython.showAs(repCode);
+
+        if (!anyLigand) return;
+
+        // Extraer átomos de ligando a HyperBall en cada estructura
+        foreach (var s in sm.loadedStructures) {
+            var ligandAtoms = new List<UnityMolAtom>();
+            foreach (var a in s.currentModel.allAtoms) {
+                if (a.isHET && !ligandSolventResidues.Contains(a.residue.name))
+                    ligandAtoms.Add(a);
+            }
+            if (ligandAtoms.Count == 0) continue;
+
+            string ligSelName = "ligand_" + s.name;
+            ExtractAtomsToRep(ligandAtoms, ligSelName, "hb");
+        }
+    }
+
+    // Extrae targetAtoms de todas las reps activas y les aplica repCode en selName,
+    // sin tocar el estado de extracción de usuario (modifiedReps / hasExtractedSelection).
+    void ExtractAtomsToRep(List<UnityMolAtom> targetAtoms, string selName, string repCode) {
+        var selMgr     = UnityMolMain.getSelectionManager();
+        var repManager = UnityMolMain.getRepresentationManager();
+        var targetSet  = new HashSet<UnityMolAtom>(targetAtoms);
+
+        var snapshot = new List<UnityMolRepresentation>(repManager.representations);
+        foreach (var rep in snapshot) {
+            if (!rep.isEnabled || rep.selection == null) continue;
+            if (rep.selection.name == selName) continue;
+
+            var repAtoms   = rep.selection.atoms;
+            var complement = new List<UnityMolAtom>(repAtoms.Count);
+            bool hasOverlap = false;
+
+            foreach (var a in repAtoms) {
+                if (targetSet.Contains(a)) hasOverlap = true;
+                else complement.Add(a);
+            }
+
+            if (!hasOverlap) continue;
+
+            if (complement.Count == 0) {
+                rep.Hide();
+            } else {
+                var complementSel = new UnityMolSelection(complement, "ligcomp_" + rep.selection.name);
+                rep.updateWithNewSelection(complementSel);
+            }
+        }
+
+        // Registrar selección y aplicar la representación del ligando
+        var ligSel = new UnityMolSelection(targetAtoms, selName);
+        selMgr.selections[selName] = ligSel;
+        APIPython.showSelection(selName, repCode);
     }
 
     void ApplyRepToSelection(string clickSelName, string repCode) {
@@ -350,10 +498,11 @@ public class RepresentationSwitcherUI : MonoBehaviour {
 
         var snapshot = new System.Collections.Generic.List<UnityMolRepresentation>(repManager.representations);
         foreach (var rep in snapshot) {
-            // Saltar reps ocultas (showAs las deja en la lista pero hidden) y la propia rep de la selección
+            // Saltar reps ocultas, la propia rep de la selección y el surface overlay (es independiente)
             if (!rep.isEnabled) continue;
             if (rep.selection == null) continue;
             if (rep.selection.name == clickSelName) continue;
+            if (rep.selection.name == surfaceOverlaySel) continue;
 
             var repAtoms   = rep.selection.atoms;
             var complement = new List<UnityMolAtom>(repAtoms.Count);
@@ -377,6 +526,9 @@ public class RepresentationSwitcherUI : MonoBehaviour {
             }
         }
 
+        APIPython.showSelection(clickSelName, repCode);
+        // showSelection only calls Show() on existing reps; first call creates via AddRepresentation
+        // without Show(). Second call guarantees Show() is invoked on the newly-created rep.
         APIPython.showSelection(clickSelName, repCode);
         extractedRepCode     = repCode;
         hasExtractedSelection = true;
@@ -496,6 +648,7 @@ public class RepresentationSwitcherUI : MonoBehaviour {
     void MarkActive(string repCode) {
         for (int i = 0; i < repTypes.Length; i++) {
             if (buttons == null || buttons[i] == null) continue;
+            if (repTypes[i].code == "s") continue; // surface es toggle, gestiona su propio color
 
             Image img = buttons[i].GetComponent<Image>();
             bool isActive = repTypes[i].code == repCode;
@@ -506,6 +659,166 @@ public class RepresentationSwitcherUI : MonoBehaviour {
             buttons[i].colors = cb;
         }
     }
+
+    // ── Panel de coloreado ────────────────────────────────────────────────
+
+    void BuildColorToggleButton(Transform parent, float panelW, float pad) {
+        var go = new GameObject("BtnColorToggle");
+        go.transform.SetParent(parent, false);
+        var img = go.AddComponent<Image>();
+        var btnColor = new Color(0.28f, 0.18f, 0.52f, 1f);
+        img.color = btnColor;
+        var btn = go.AddComponent<Button>();
+        btn.onClick.AddListener(OnColorToggle);
+        var cb = btn.colors;
+        cb.normalColor      = btnColor;
+        cb.highlightedColor = Color.Lerp(btnColor, Color.white, 0.25f);
+        cb.pressedColor     = Color.Lerp(btnColor, Color.black, 0.30f);
+        btn.colors = cb;
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0f, 0f);
+        rt.anchorMax = new Vector2(1f, 0f);
+        rt.pivot     = new Vector2(0.5f, 0f);
+        rt.offsetMin = new Vector2(pad, pad);
+        rt.offsetMax = new Vector2(-pad, pad + colorToggleH);
+        var lGO = new GameObject("Label"); lGO.transform.SetParent(go.transform, false);
+        colorToggleBtnLabel = lGO.AddComponent<Text>();
+        colorToggleBtnLabel.text      = "COLOREAR  ▼";
+        colorToggleBtnLabel.font      = GetFont();
+        colorToggleBtnLabel.fontSize  = 20;
+        colorToggleBtnLabel.fontStyle = FontStyle.Bold;
+        colorToggleBtnLabel.color     = Color.white;
+        colorToggleBtnLabel.alignment = TextAnchor.MiddleCenter;
+        var lRT = lGO.GetComponent<RectTransform>();
+        lRT.anchorMin = Vector2.zero; lRT.anchorMax = Vector2.one;
+        lRT.offsetMin = lRT.offsetMax = Vector2.zero;
+    }
+
+    void BuildColorSection(Transform canvasParent, float panelW, float panelH, float pad, float btnH) {
+        float btnW    = (panelW - pad * 3f) / 2f;
+        float sectH   = 2f * btnH + 3f * pad;
+        float sectY   = -panelH / 2f - pad - sectH / 2f;
+
+        colorSectionGO = new GameObject("ColorSection");
+        colorSectionGO.transform.SetParent(canvasParent, false);
+        var sectRT = colorSectionGO.AddComponent<RectTransform>();
+        sectRT.anchoredPosition = new Vector2(0f, sectY);
+        sectRT.sizeDelta        = new Vector2(panelW, sectH);
+
+        // Fondo del sub-panel
+        var bgGO = new GameObject("BG"); bgGO.transform.SetParent(colorSectionGO.transform, false);
+        bgGO.AddComponent<Image>().color = bgColor;
+        var bgRT = bgGO.GetComponent<RectTransform>();
+        bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
+        bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
+
+        // 4 botones de coloreado en rejilla 2×2
+        (string label, string desc, System.Action action)[] colorBtns = {
+            ("Estruct. 2ria", "Helix/Lámina/Coil",   ApplySSColoring),
+            ("CPK Átomos",   "Color por elemento",    ApplyCPKColoring),
+            ("Hidrofob.",     "Por tipo de residuo",       ApplyHydrophobicityColoring),
+            ("Rainbow",       "Por núm. de residuo",  ApplyRainbowColoring),
+        };
+
+        for (int i = 0; i < colorBtns.Length; i++) {
+            int row = i / 2;
+            int col = i % 2;
+            float x = -panelW / 2f + pad + col * (btnW + pad) + btnW / 2f;
+            float y = sectH / 2f - pad - row * (btnH + pad) - btnH / 2f;
+            var (lbl, dsc, act) = colorBtns[i];
+            var btn = CreateColorButton(colorSectionGO.transform, lbl, dsc, x, y, btnW, btnH);
+            var capturedAct = act;
+            btn.onClick.AddListener(() => capturedAct());
+        }
+
+        colorSectionGO.SetActive(false);
+    }
+
+    Button CreateColorButton(Transform parent, string label, string desc,
+                             float x, float y, float w, float h) {
+        var go = new GameObject("CBtn_" + label); go.transform.SetParent(parent, false);
+        var btnColor = new Color(0.28f, 0.18f, 0.52f, 1f);
+        go.AddComponent<Image>().color = btnColor;
+        var btn = go.AddComponent<Button>();
+        var cb = btn.colors;
+        cb.normalColor      = btnColor;
+        cb.highlightedColor = Color.Lerp(btnColor, Color.white, 0.25f);
+        cb.pressedColor     = Color.Lerp(btnColor, Color.black, 0.30f);
+        btn.colors = cb;
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchoredPosition = new Vector2(x, y);
+        rt.sizeDelta = new Vector2(w, h);
+
+        var nGO = new GameObject("N"); nGO.transform.SetParent(go.transform, false);
+        var nT  = nGO.AddComponent<Text>();
+        nT.text = label; nT.font = GetFont(); nT.fontSize = 20; nT.fontStyle = FontStyle.Bold;
+        nT.color = Color.white; nT.alignment = TextAnchor.MiddleCenter;
+        var nRT = nGO.GetComponent<RectTransform>();
+        nRT.anchorMin = new Vector2(0f, 0.45f); nRT.anchorMax = new Vector2(1f, 1f);
+        nRT.offsetMin = new Vector2(4, 0); nRT.offsetMax = new Vector2(-4, -4);
+
+        var dGO = new GameObject("D"); dGO.transform.SetParent(go.transform, false);
+        var dT  = dGO.AddComponent<Text>();
+        dT.text = desc; dT.font = GetFont(); dT.fontSize = 14;
+        dT.color = new Color(0.85f, 0.78f, 1f, 1f); dT.alignment = TextAnchor.MiddleCenter;
+        var dRT = dGO.GetComponent<RectTransform>();
+        dRT.anchorMin = new Vector2(0f, 0f); dRT.anchorMax = new Vector2(1f, 0.5f);
+        dRT.offsetMin = new Vector2(4, 2); dRT.offsetMax = new Vector2(-4, 0);
+
+        return btn;
+    }
+
+    void OnColorToggle() {
+        colorSectionExpanded = !colorSectionExpanded;
+        if (colorSectionGO) colorSectionGO.SetActive(colorSectionExpanded);
+        if (colorToggleBtnLabel != null)
+            colorToggleBtnLabel.text = colorSectionExpanded ? "COLOREAR  ▲" : "COLOREAR  ▼";
+    }
+
+    // Devuelve el conjunto de nombres de selección "toda-la-estructura" que deben omitirse.
+    // Después de ApplyRepRespectingLigand, updateWithNewSelection muta esas selecciones
+    // in-place añadiendo HOH/MG al complemento, causando errores en el bond-line manager.
+    HashSet<string> FullStructureSelNames() {
+        var sm = UnityMolMain.getStructureManager();
+        var names = new HashSet<string>();
+        foreach (var s in sm.loadedStructures)
+            names.Add(s.ToSelectionName());
+        return names;
+    }
+
+    // Aplica colorFunc a todas las representaciones activas (itera todos los tipos de rep conocidos).
+    void ColorAllReps(System.Action<string, string> colorFunc) {
+        var repMgr    = UnityMolMain.getRepresentationManager();
+        var skipNames = FullStructureSelNames();
+        var seen      = new HashSet<string>();
+        foreach (var rep in repMgr.representations) {
+            if (rep.selection == null) continue;
+            string sn = rep.selection.name;
+            if (skipNames.Contains(sn)) continue;
+            if (!seen.Add(sn)) continue;
+            foreach (var (code, _, _) in repTypes)
+                colorFunc(sn, code);
+        }
+    }
+
+    void ApplySSColoring() {
+        var repMgr    = UnityMolMain.getRepresentationManager();
+        var skipNames = FullStructureSelNames();
+        var seen      = new HashSet<string>();
+        foreach (var rep in repMgr.representations) {
+            if (rep.selection == null) continue;
+            string sn = rep.selection.name;
+            if (skipNames.Contains(sn)) continue;
+            if (!seen.Add(sn)) continue;
+            APIPython.setCartoonColorSS(sn, "helix", new Color(1.00f, 0.00f, 0.80f)); // magenta (PyMOL)
+            APIPython.setCartoonColorSS(sn, "sheet", new Color(1.00f, 1.00f, 0.00f)); // amarillo (PyMOL)
+            APIPython.setCartoonColorSS(sn, "coil",  new Color(1.00f, 1.00f, 1.00f)); // blanco (PyMOL)
+        }
+    }
+
+    void ApplyCPKColoring()             => ColorAllReps((sel, t) => APIPython.colorByAtom(sel, t));
+    void ApplyHydrophobicityColoring()  => ColorAllReps((sel, t) => APIPython.colorByHydrophobicity(sel, t));
+    void ApplyRainbowColoring()         => ColorAllReps((sel, t) => APIPython.colorByResnum(sel, t));
 
     // ── Helpers ───────────────────────────────────────────────────────────
 
