@@ -53,6 +53,16 @@ public class AnimationPlayerUI : MonoBehaviour {
     bool  manualPlay  = false;
     float manualTimer = 0f;
 
+    Button morphBtn;
+    Image  morphBtnImg;
+    Text   morphBtnLabel;
+    Button morphQualityBtn;
+    Image  morphQualityBtnImg;
+    Button morphPhysicalBtn;
+    Image  morphPhysicalBtnImg;
+
+    bool _morphActive = false;
+
     int _repSkipCounter = 0;
     int _repSkipRate    = 1;
 
@@ -109,11 +119,10 @@ public class AnimationPlayerUI : MonoBehaviour {
             return;
         }
 
-        if (smoothPlay) UpdateSmooth(anim);
-        else if (manualPlay && IsXTC(anim) && anim.trajPlayer == null) {
+        if (manualPlay && (_morphActive || anim.trajPlayer == null || !anim.trajPlayer.play)) {
             manualTimer += Time.deltaTime;
             float interval = 1f / Mathf.Max(0.1f, speed);
-            if (manualTimer >= interval) { manualTimer = 0f; anim.trajNext(true, looping); }
+            if (manualTimer >= interval) { manualTimer = 0f; StepFrame(anim, true); }
         }
 
         // Auto-restore: if the protein becomes invisible while playing (e.g. user
@@ -135,7 +144,7 @@ public class AnimationPlayerUI : MonoBehaviour {
             _visCheckFrame = 0;
         }
 
-        int cur = smoothPlay ? lerpFromFrame : GetCurrentFrame(anim);
+        int cur = GetCurrentFrame(anim);
         int tot = GetTotalFrames(anim);
         if (frameLabel) frameLabel.text = $"Frame {cur + 1} / {tot}";
 
@@ -176,8 +185,9 @@ public class AnimationPlayerUI : MonoBehaviour {
             if (s.trajPlayer   != null) s.trajPlayer.play   = false;
             if (s.modelsPlayer != null) s.modelsPlayer.play = false;
         }
-        smoothPlay = false;
-        manualPlay = false;
+        smoothPlay   = false;
+        manualPlay   = false;
+        _morphActive = false;
     }
 
     public void Pause() => StopAll();
@@ -297,18 +307,28 @@ public class AnimationPlayerUI : MonoBehaviour {
     }
 
     int GetCurrentFrame(UnityMolStructure s) {
+        if (_morphActive)     return s.currentFrameId;
         if (IsXTC(s))         return s.xdr.CurrentFrame;
         if (s.trajectoryMode) return s.currentFrameId;
         return s.currentModelId;
     }
 
     int GetTotalFrames(UnityMolStructure s) {
+        if (_morphActive && s.modelFrames != null)         return s.modelFrames.Count;
         if (IsXTC(s))                                      return s.xdr.NumberFrames;
         if (s.trajectoryMode && s.modelFrames != null)     return s.modelFrames.Count;
         return s.models != null ? s.models.Count : 1;
     }
 
     void StepFrame(UnityMolStructure s, bool fwd) {
+        if (_morphActive && s.modelFrames != null) {
+            int total = s.modelFrames.Count;
+            int next  = s.currentFrameId + (fwd ? 1 : -1);
+            if (next >= total) next = looping ? 0 : total - 1;
+            if (next < 0)      next = looping ? total - 1 : 0;
+            s.setModel(next);
+            return;
+        }
         if (IsXTC(s)) s.trajNext(fwd, looping);
         else          s.modelNext(fwd, looping);
     }
@@ -328,9 +348,16 @@ public class AnimationPlayerUI : MonoBehaviour {
         // Sin animación todavía → generar sintética y arrancar
         if (s == null) {
             if (SyntheticAnimator.GenerateFor(target)) {
-                StartSmoothPlay(target);
+                manualPlay = true;
+                manualTimer = 0f;
                 return;
             }
+            return;
+        }
+
+        if (_morphActive) {
+            manualPlay = !manualPlay;
+            manualTimer = 0f;
             return;
         }
 
@@ -345,8 +372,8 @@ public class AnimationPlayerUI : MonoBehaviour {
         if (IsXTC(s)) { manualPlay = !manualPlay; manualTimer = 0f; return; }
 
         if (CanInterpolate(s)) {
-            if (smoothPlay) StopSmoothPlay(s);
-            else            StartSmoothPlay(s);
+            manualPlay = !manualPlay;
+            manualTimer = 0f;
             return;
         }
 
@@ -355,7 +382,7 @@ public class AnimationPlayerUI : MonoBehaviour {
     void OnPrev() {
         var s = GetAnimatedStructure();
         if (s == null) return;
-        StopSmoothPlay(s); manualPlay = false;
+        smoothPlay = false; manualPlay = false;
         if (s.trajPlayer   != null) s.trajPlayer.play   = false;
         if (s.modelsPlayer != null) s.modelsPlayer.play = false;
         StepFrame(s, false);
@@ -364,7 +391,7 @@ public class AnimationPlayerUI : MonoBehaviour {
     void OnNext() {
         var s = GetAnimatedStructure();
         if (s == null) return;
-        StopSmoothPlay(s); manualPlay = false;
+        smoothPlay = false; manualPlay = false;
         if (s.trajPlayer   != null) s.trajPlayer.play   = false;
         if (s.modelsPlayer != null) s.modelsPlayer.play = false;
         StepFrame(s, true);
@@ -398,6 +425,34 @@ public class AnimationPlayerUI : MonoBehaviour {
         if (loopBtnLabel) loopBtnLabel.text = looping ? "Loop: ON" : "Loop: OFF";
     }
 
+    void OnMorphClick()         => LaunchMorph(0);
+    void OnMorphQualityClick()  => LaunchMorph(1);
+    void OnMorphPhysicalClick() => LaunchMorph(2);
+
+    void LaunchMorph(int mode) {
+        var sm = UnityMolMain.getStructureManager();
+        var s  = GetCurrentTarget(sm);
+        if (s == null) return;
+
+        smoothPlay = false;
+        manualPlay = false;
+        if (s.trajPlayer   != null) s.trajPlayer.play   = false;
+        if (s.modelsPlayer != null) s.modelsPlayer.play = false;
+
+        bool ok = mode == 0 ? MorphGenerator.Generate(s)
+                : mode == 1 ? MorphGeneratorQuality.Generate(s)
+                :             MorphGeneratorPhysical.Generate(s);
+        if (!ok) {
+            if (frameLabel) frameLabel.text = "Necesitas ≥ 2 frames de trayectoria";
+            return;
+        }
+
+        s.setModel(0);
+        _morphActive = true;
+        manualPlay   = true;
+        manualTimer  = 0f;
+    }
+
     string SpeedText() => speed < 1f ? $"{speed:F2} fps" : $"{speed:F0} fps";
 
     // Returns true if the FULL-PROTEIN selection ("all_<name>") has an active rep with
@@ -416,7 +471,7 @@ public class AnimationPlayerUI : MonoBehaviour {
     // ── Construcción del panel ────────────────────────────────────────────────
 
     void BuildPanel() {
-        const float W = 420f, H = 380f;
+        const float W = 420f, H = 460f;
 
         var canvasGO = new GameObject("AnimationPlayerPanel");
         canvasGO.transform.position = spawnPosition;
@@ -513,6 +568,35 @@ public class AnimationPlayerUI : MonoBehaviour {
         loopBtn      = loopGO.GetComponent<Button>();
         loopBtnLabel = loopGO.GetComponentInChildren<Text>();
         UpdateButtonColorBlock(loopBtn, btnOrange);
+
+        const float morphBtnH = 44f;
+        const float morphBtnW = 120f;
+        float morphY = loopY - 50f / 2f - 12f - morphBtnH / 2f;
+
+        var morphGO = MakeButtonGO(canvasGO.transform, "BtnMorphLinear", "LINEAL",
+            new Vector2(-135f, morphY), new Vector2(morphBtnW, morphBtnH), () => OnMorphClick());
+        morphBtn      = morphGO.GetComponent<Button>();
+        morphBtnImg   = morphGO.GetComponent<Image>();
+        morphBtnLabel = morphGO.GetComponentInChildren<Text>();
+        var morphLinearColor = new Color(0.45f, 0.18f, 0.65f, 1f);
+        morphBtnImg.color = morphLinearColor;
+        UpdateButtonColorBlock(morphBtn, morphLinearColor);
+
+        var morphQGO = MakeButtonGO(canvasGO.transform, "BtnMorphRigid", "RÍGIDO",
+            new Vector2(0f, morphY), new Vector2(morphBtnW, morphBtnH), () => OnMorphQualityClick());
+        morphQualityBtn    = morphQGO.GetComponent<Button>();
+        morphQualityBtnImg = morphQGO.GetComponent<Image>();
+        var morphRigidColor = new Color(0.10f, 0.55f, 0.55f, 1f);
+        morphQualityBtnImg.color = morphRigidColor;
+        UpdateButtonColorBlock(morphQualityBtn, morphRigidColor);
+
+        var morphPGO = MakeButtonGO(canvasGO.transform, "BtnMorphPhysical", "FÍSICO",
+            new Vector2(135f, morphY), new Vector2(morphBtnW, morphBtnH), () => OnMorphPhysicalClick());
+        morphPhysicalBtn    = morphPGO.GetComponent<Button>();
+        morphPhysicalBtnImg = morphPGO.GetComponent<Image>();
+        var morphPhysicalColor = new Color(0.65f, 0.40f, 0.05f, 1f);
+        morphPhysicalBtnImg.color = morphPhysicalColor;
+        UpdateButtonColorBlock(morphPhysicalBtn, morphPhysicalColor);
     }
 
     // ── Helpers de UI ─────────────────────────────────────────────────────────

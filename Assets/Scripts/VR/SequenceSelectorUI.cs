@@ -123,7 +123,10 @@ public class SequenceSelectorUI : MonoBehaviour {
     void OnClearClicked() {
         SeqClearHighlight();
         var selMgr = UnityMolMain.getSelectionManager();
-        selMgr.ClearCurrentSelection();
+        if (selMgr.currentSelection != null && selMgr.currentSelection.isAlterable) {
+            APIPython.select("none", selMgr.currentSelection.name,
+                             createSelection: true, addToExisting: false, silent: true);
+        }
         SetStatus("Selección limpiada.", Color.white);
     }
 
@@ -149,12 +152,8 @@ public class SequenceSelectorUI : MonoBehaviour {
         if (seqHighlightedAtoms.Count == 0) return;
         var repManager = UnityMolMain.getRepresentationManager();
         if (repManager == null) { seqHighlightedAtoms.Clear(); return; }
-        foreach (var a in seqHighlightedAtoms) {
-            foreach (var rep in repManager.representations) {
-                if (rep.selection != null && rep.selection.atomToIdInSel.ContainsKey(a))
-                    rep.ResetColor(a);
-            }
-        }
+        foreach (var rep in repManager.representations)
+            rep.ResetColor();
         seqHighlightedAtoms.Clear();
     }
 
