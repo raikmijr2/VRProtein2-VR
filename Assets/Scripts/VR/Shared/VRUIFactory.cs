@@ -84,14 +84,21 @@ public static class VRUIFactory {
     /// <summary>
     /// Single-line input field with a separate gray placeholder hint.
     /// initialText is what the field shows/edits; placeholderHint is the
-    /// gray hint text shown by Unity's InputField while the field is empty.
+    /// hint text shown by Unity's InputField while the field is empty.
+    /// backgroundColor/placeholderColor/textFontSize default to match the
+    /// original PDBLoaderUI look; pass overrides for a differently-themed
+    /// panel (e.g. SequenceSelectorUI's greenish, integer-only inputs).
     /// </summary>
     public static InputField CreateInputField(Transform parent, float width, float height, Vector2 pos,
-            string initialText, string placeholderHint) {
+            string initialText, string placeholderHint,
+            Color? backgroundColor = null, Color? placeholderColor = null, int textFontSize = 20,
+            InputField.ContentType contentType = InputField.ContentType.Standard,
+            TextAnchor textAlignment = TextAnchor.MiddleCenter) {
         var go = new GameObject("Input");
         go.transform.SetParent(parent, false);
-        go.AddComponent<Image>().color = new Color(0.15f, 0.15f, 0.22f, 1f);
+        go.AddComponent<Image>().color = backgroundColor ?? new Color(0.15f, 0.15f, 0.22f, 1f);
         var input = go.AddComponent<InputField>();
+        input.contentType = contentType;
         var r = go.GetComponent<RectTransform>();
         r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
         r.sizeDelta = new Vector2(width, height);
@@ -100,8 +107,8 @@ public static class VRUIFactory {
         var tGO = new GameObject("Text");
         tGO.transform.SetParent(go.transform, false);
         var t = tGO.AddComponent<Text>();
-        t.font = GetFont(); t.fontSize = 20; t.color = Color.white;
-        t.alignment = TextAnchor.MiddleCenter;
+        t.font = GetFont(); t.fontSize = textFontSize; t.color = Color.white;
+        t.alignment = textAlignment;
         var tr = tGO.GetComponent<RectTransform>();
         tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
         tr.offsetMin = new Vector2(6, 0); tr.offsetMax = new Vector2(-6, 0);
@@ -112,8 +119,8 @@ public static class VRUIFactory {
         phGO.transform.SetParent(go.transform, false);
         var ph = phGO.AddComponent<Text>();
         ph.font = GetFont(); ph.fontSize = 18; ph.fontStyle = FontStyle.Italic;
-        ph.color = new Color(0.6f, 0.6f, 0.6f, 0.8f);
-        ph.text = placeholderHint; ph.alignment = TextAnchor.MiddleCenter;
+        ph.color = placeholderColor ?? new Color(0.6f, 0.6f, 0.6f, 0.8f);
+        ph.text = placeholderHint; ph.alignment = textAlignment;
         var phr = phGO.GetComponent<RectTransform>();
         phr.anchorMin = Vector2.zero; phr.anchorMax = Vector2.one;
         phr.offsetMin = new Vector2(6, 0); phr.offsetMax = new Vector2(-6, 0);
@@ -124,14 +131,14 @@ public static class VRUIFactory {
 
     /// <summary>Solid-color button with a bold centered label, standard hover/press tint.</summary>
     public static Button CreateButton(Transform parent, string label, Vector2 size, Vector2 pos, Color color,
-            int fontSize = 16, FontStyle style = FontStyle.Bold) {
+            int fontSize = 16, FontStyle style = FontStyle.Bold, float highlightBlend = 0.25f) {
         var go = new GameObject("Btn_" + label);
         go.transform.SetParent(parent, false);
         go.AddComponent<Image>().color = color;
         var btn = go.AddComponent<Button>();
         var cb = btn.colors;
         cb.normalColor      = color;
-        cb.highlightedColor = Color.Lerp(color, Color.white, 0.25f);
+        cb.highlightedColor = Color.Lerp(color, Color.white, highlightBlend);
         cb.pressedColor     = Color.Lerp(color, Color.black, 0.30f);
         btn.colors = cb;
         var r = go.GetComponent<RectTransform>();

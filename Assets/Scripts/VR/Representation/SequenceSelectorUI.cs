@@ -196,7 +196,7 @@ public class SequenceSelectorUI : MonoBehaviour {
         rt.sizeDelta = new Vector2(kW, kH);
         rt.anchoredPosition = new Vector2(panelW / 2f + 20f + kW / 2f, 0f);
 
-        MakeBG(numKeyboardGO.transform, bg);
+        VRUIFactory.CreateBackgroundImage(numKeyboardGO.transform, bg);
 
         string[][] rows = {
             new[] { "7", "8", "9" },
@@ -214,38 +214,15 @@ public class SequenceSelectorUI : MonoBehaviour {
                 float y =  kH / 2f - pad - r * (btnS + pad) - btnS / 2f;
                 Color col = key == "OK" ? btnGreen : key == "←" ? cDel : cNum;
                 string k  = key == "←" ? "Back" : key;
-                var btn = MakeKeyBtn(numKeyboardGO.transform, key, new Vector2(x, y), btnS, col);
+                int keyFontSize = key.Length > 1 ? 18 : 26;
+                var btn = VRUIFactory.CreateButton(numKeyboardGO.transform, key, new Vector2(btnS, btnS), new Vector2(x, y), col,
+                    fontSize: keyFontSize, highlightBlend: 0.30f);
                 var capturedK = k;
                 btn.onClick.AddListener(() => TypeKey(capturedK));
             }
         }
 
         numKeyboardGO.SetActive(false);
-    }
-
-    Button MakeKeyBtn(Transform p, string label, Vector2 pos, float size, Color c) {
-        var go = new GameObject("Key_" + label); go.transform.SetParent(p, false);
-        go.AddComponent<Image>().color = c;
-        var btn = go.AddComponent<Button>();
-        var cb = btn.colors;
-        cb.normalColor      = c;
-        cb.highlightedColor = Color.Lerp(c, Color.white, 0.30f);
-        cb.pressedColor     = Color.Lerp(c, Color.black, 0.30f);
-        btn.colors = cb;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
-        r.sizeDelta = new Vector2(size, size);
-        r.anchoredPosition = pos;
-        var tGO = new GameObject("L"); tGO.transform.SetParent(go.transform, false);
-        var t = tGO.AddComponent<Text>();
-        t.text = label; t.font = GetFont();
-        t.fontSize = label.Length > 1 ? 18 : 26;
-        t.fontStyle = FontStyle.Bold;
-        t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
-        var tr = tGO.GetComponent<RectTransform>();
-        tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
-        tr.offsetMin = tr.offsetMax = Vector2.zero;
-        return btn;
     }
 
     // ── Panel ─────────────────────────────────────────────────────────────────
@@ -259,151 +236,47 @@ public class SequenceSelectorUI : MonoBehaviour {
                 + labelH + 6f + inputH + pad
                 + btnH + pad + statusH + pad;
 
-        var go = new GameObject("SequenceSelectorPanel");
-        go.transform.position = spawnPosition;
-        var canvas = go.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-        go.AddComponent<CanvasScaler>().dynamicPixelsPerUnit = 10f;
-        go.AddComponent<GraphicRaycaster>();
-        go.AddComponent<CanvasRaycastTarget>();
-        go.AddComponent<PointerMoveUI>().moveParent = false;
-        var rt = go.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(W, H);
-        go.transform.localScale = Vector3.one * 0.003f;
+        var go = VRUIFactory.CreateWorldSpaceCanvas("SequenceSelectorPanel", spawnPosition, new Vector2(W, H));
 
-        MakeBG(go.transform, bg);
+        VRUIFactory.CreateBackgroundImage(go.transform, bg);
         float y = H / 2f - pad;
 
-        AddLabel(go.transform, "SELECCIÓN SECUENCIA", W, 24, FontStyle.Bold, new Vector2(0, y - titleH / 2f));
+        VRUIFactory.CreateCenteredLabel(go.transform, "SELECCIÓN SECUENCIA", W, 24 + 6, 24, new Vector2(0, y - titleH / 2f), FontStyle.Bold);
         y -= titleH + pad;
 
-        AddSeparator(go.transform, y + rangeLH / 2f);
-        rangeLabel = AddText(go.transform, "Sin proteína cargada", W - pad * 2, rangeLH, new Vector2(0, y - rangeLH / 2f), 14);
+        VRUIFactory.CreateSeparator(go.transform, new Vector2(0, y + rangeLH / 2f), 380f);
+        rangeLabel = VRUIFactory.CreateCenteredLabel(go.transform, "Sin proteína cargada", W - pad * 2, rangeLH, 14, new Vector2(0, y - rangeLH / 2f));
         rangeLabel.color = new Color(0.7f, 0.9f, 0.7f, 1f);
         y -= rangeLH + pad;
 
-        AddLabel(go.transform, "Desde residuo:", W, 16, FontStyle.Normal, new Vector2(0, y - labelH / 2f));
+        VRUIFactory.CreateCenteredLabel(go.transform, "Desde residuo:", W, 16 + 6, 16, new Vector2(0, y - labelH / 2f));
         y -= labelH + 6f;
-        fromInput = AddInput(go.transform, W - pad * 2, inputH, new Vector2(0, y - inputH / 2f), "1");
+        fromInput = VRUIFactory.CreateInputField(go.transform, W - pad * 2, inputH, new Vector2(0, y - inputH / 2f), "", "1",
+            new Color(0.12f, 0.18f, 0.14f, 1f), new Color(0.5f, 0.7f, 0.5f, 0.8f), 22, InputField.ContentType.IntegerNumber);
         y -= inputH + pad;
 
-        AddLabel(go.transform, "Hasta residuo:", W, 16, FontStyle.Normal, new Vector2(0, y - labelH / 2f));
+        VRUIFactory.CreateCenteredLabel(go.transform, "Hasta residuo:", W, 16 + 6, 16, new Vector2(0, y - labelH / 2f));
         y -= labelH + 6f;
-        toInput = AddInput(go.transform, W - pad * 2, inputH, new Vector2(0, y - inputH / 2f), "166");
+        toInput = VRUIFactory.CreateInputField(go.transform, W - pad * 2, inputH, new Vector2(0, y - inputH / 2f), "", "166",
+            new Color(0.12f, 0.18f, 0.14f, 1f), new Color(0.5f, 0.7f, 0.5f, 0.8f), 22, InputField.ContentType.IntegerNumber);
         y -= inputH + pad;
 
         float halfW = (W - pad * 3f) / 2f;
-        var selBtn = MakeBtn(go.transform, "SELECCIONAR",
-            new Vector2(halfW, btnH), new Vector2(-halfW / 2f - pad / 2f, y - btnH / 2f), btnGreen);
+        var selBtn = VRUIFactory.CreateButton(go.transform, "SELECCIONAR",
+            new Vector2(halfW, btnH), new Vector2(-halfW / 2f - pad / 2f, y - btnH / 2f), btnGreen, fontSize: 18);
         selBtn.onClick.AddListener(OnSelectClicked);
-        var clrBtn = MakeBtn(go.transform, "LIMPIAR",
-            new Vector2(halfW, btnH), new Vector2(halfW / 2f + pad / 2f, y - btnH / 2f), btnRed);
+        var clrBtn = VRUIFactory.CreateButton(go.transform, "LIMPIAR",
+            new Vector2(halfW, btnH), new Vector2(halfW / 2f + pad / 2f, y - btnH / 2f), btnRed, fontSize: 18);
         clrBtn.onClick.AddListener(OnClearClicked);
         y -= btnH + pad;
 
-        statusText = AddText(go.transform, "Elige un rango y pulsa SELECCIONAR.",
-            W - pad * 2, statusH, new Vector2(0, y - statusH / 2f), 13);
+        statusText = VRUIFactory.CreateCenteredLabel(go.transform, "Elige un rango y pulsa SELECCIONAR.",
+            W - pad * 2, statusH, 13, new Vector2(0, y - statusH / 2f));
         statusText.horizontalOverflow = HorizontalWrapMode.Wrap;
         statusText.alignment = TextAnchor.UpperCenter;
 
         BuildNumericKeyboard(go.transform, W);
     }
 
-    // ── UI helpers ────────────────────────────────────────────────────────────
-
-    static Font GetFont() =>
-        Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ??
-        Resources.GetBuiltinResource<Font>("Arial.ttf");
-
-    static void MakeBG(Transform p, Color c) {
-        var go = new GameObject("BG"); go.transform.SetParent(p, false);
-        go.AddComponent<Image>().color = c;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one;
-        r.offsetMin = r.offsetMax = Vector2.zero;
-    }
-
-    static void AddSeparator(Transform p, float y) {
-        var go = new GameObject("Sep"); go.transform.SetParent(p, false);
-        go.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0.15f);
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
-        r.sizeDelta = new Vector2(380f, 2f);
-        r.anchoredPosition = new Vector2(0, y);
-    }
-
-    static void AddLabel(Transform p, string text, float w, int fs, FontStyle style, Vector2 pos) {
-        var go = new GameObject("Lbl"); go.transform.SetParent(p, false);
-        var t = go.AddComponent<Text>();
-        t.text = text; t.font = GetFont(); t.fontSize = fs; t.fontStyle = style;
-        t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
-        r.sizeDelta = new Vector2(w, fs + 6); r.anchoredPosition = pos;
-    }
-
-    static Text AddText(Transform p, string text, float w, float h, Vector2 pos, int fs) {
-        var go = new GameObject("Txt"); go.transform.SetParent(p, false);
-        var t = go.AddComponent<Text>();
-        t.text = text; t.font = GetFont(); t.fontSize = fs;
-        t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
-        r.sizeDelta = new Vector2(w, h); r.anchoredPosition = pos;
-        return t;
-    }
-
-    static InputField AddInput(Transform p, float w, float h, Vector2 pos, string placeholder) {
-        var go = new GameObject("Input"); go.transform.SetParent(p, false);
-        go.AddComponent<Image>().color = new Color(0.12f, 0.18f, 0.14f, 1f);
-        var input = go.AddComponent<InputField>();
-        input.contentType = InputField.ContentType.IntegerNumber;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
-        r.sizeDelta = new Vector2(w, h); r.anchoredPosition = pos;
-
-        var tGO = new GameObject("Text"); tGO.transform.SetParent(go.transform, false);
-        var t = tGO.AddComponent<Text>();
-        t.font = GetFont(); t.fontSize = 22; t.color = Color.white;
-        t.alignment = TextAnchor.MiddleCenter;
-        var tr = tGO.GetComponent<RectTransform>();
-        tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
-        tr.offsetMin = new Vector2(6, 0); tr.offsetMax = new Vector2(-6, 0);
-        input.textComponent = t;
-
-        var phGO = new GameObject("PH"); phGO.transform.SetParent(go.transform, false);
-        var ph = phGO.AddComponent<Text>();
-        ph.font = GetFont(); ph.fontSize = 18; ph.fontStyle = FontStyle.Italic;
-        ph.color = new Color(0.5f, 0.7f, 0.5f, 0.8f);
-        ph.text = placeholder; ph.alignment = TextAnchor.MiddleCenter;
-        var phr = phGO.GetComponent<RectTransform>();
-        phr.anchorMin = Vector2.zero; phr.anchorMax = Vector2.one;
-        phr.offsetMin = new Vector2(6, 0); phr.offsetMax = new Vector2(-6, 0);
-        input.placeholder = ph;
-
-        return input;
-    }
-
-    static Button MakeBtn(Transform p, string label, Vector2 size, Vector2 pos, Color c) {
-        var go = new GameObject("Btn_" + label); go.transform.SetParent(p, false);
-        go.AddComponent<Image>().color = c;
-        var btn = go.AddComponent<Button>();
-        var cb = btn.colors;
-        cb.normalColor      = c;
-        cb.highlightedColor = Color.Lerp(c, Color.white, 0.25f);
-        cb.pressedColor     = Color.Lerp(c, Color.black, 0.30f);
-        btn.colors = cb;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
-        r.sizeDelta = size; r.anchoredPosition = pos;
-        var tGO = new GameObject("L"); tGO.transform.SetParent(go.transform, false);
-        var t = tGO.AddComponent<Text>();
-        t.text = label; t.font = GetFont(); t.fontSize = 18; t.fontStyle = FontStyle.Bold;
-        t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
-        var tr = tGO.GetComponent<RectTransform>();
-        tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
-        tr.offsetMin = tr.offsetMax = Vector2.zero;
-        return btn;
-    }
 }
 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UMol.API;
-using HTC.UnityPlugin.Pointer3D;
 
 namespace UMol {
 
@@ -60,22 +59,9 @@ public class TrajAnimationUI : MonoBehaviour {
     void BuildPanel() {
         float W = 500f, H = 440f, pad = 10f;
 
-        GameObject canvasGO = new GameObject("TrajAnimPanel");
-        canvasGO.transform.position = spawnPosition;
-        Canvas canvas = canvasGO.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-        canvasGO.AddComponent<CanvasScaler>().dynamicPixelsPerUnit = 10f;
-        canvasGO.AddComponent<GraphicRaycaster>();
-        canvasGO.AddComponent<CanvasRaycastTarget>();
+        GameObject canvasGO = VRUIFactory.CreateWorldSpaceCanvas("TrajAnimPanel", spawnPosition, new Vector2(W, H));
 
-        var mover = canvasGO.AddComponent<PointerMoveUI>();
-        mover.moveParent = false;
-
-        var rt = canvasGO.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(W, H);
-        canvasGO.transform.localScale = Vector3.one * 0.003f;
-
-        AddBg(canvasGO.transform, W, H);
+        VRUIFactory.CreateBackgroundImage(canvasGO.transform, bgColor);
 
         float y = H / 2f - pad;
 
@@ -84,21 +70,25 @@ public class TrajAnimationUI : MonoBehaviour {
 
         // PRMTOP path row
         y = AddLabel(canvasGO.transform, "Archivo PRMTOP:", W, 18, FontStyle.Normal, ref y, pad);
-        prmtopInput = AddInputField(canvasGO.transform, W - pad * 2, 34, y, defaultPrmtopPath);
+        prmtopInput = VRUIFactory.CreateInputField(canvasGO.transform, W - pad * 2, 34, new Vector2(0, y - 17f),
+            defaultPrmtopPath, "ruta al archivo...", new Color(0.15f, 0.15f, 0.20f, 1f), null, 14,
+            InputField.ContentType.Standard, TextAnchor.MiddleLeft);
         y -= 34 + pad;
 
         // DCD folder row
         y = AddLabel(canvasGO.transform, "Carpeta DCD:", W, 18, FontStyle.Normal, ref y, pad);
-        dcdFolderInput = AddInputField(canvasGO.transform, W - pad * 2, 34, y, defaultDCDFolder);
+        dcdFolderInput = VRUIFactory.CreateInputField(canvasGO.transform, W - pad * 2, 34, new Vector2(0, y - 17f),
+            defaultDCDFolder, "ruta al archivo...", new Color(0.15f, 0.15f, 0.20f, 1f), null, 14,
+            InputField.ContentType.Standard, TextAnchor.MiddleLeft);
         y -= 34 + pad;
 
         // Load button
-        var loadBtn = AddButton(canvasGO.transform, "CARGAR", new Vector2(W - pad * 2, 44), new Vector2(0, y - 22), btnGreen);
+        var loadBtn = VRUIFactory.CreateButton(canvasGO.transform, "CARGAR", new Vector2(W - pad * 2, 44), new Vector2(0, y - 22), btnGreen, fontSize: 18);
         loadBtn.onClick.AddListener(OnLoadClicked);
         y -= 44 + pad;
 
         // Status
-        statusText = AddTextGO(canvasGO.transform, "Listo.", W - pad * 2, 22, new Vector2(0, y - 11), 16);
+        statusText = VRUIFactory.CreateCenteredLabel(canvasGO.transform, "Listo.", W - pad * 2, 22, 16, new Vector2(0, y - 11), alignment: TextAnchor.MiddleLeft);
         y -= 22 + pad;
 
         // Separator
@@ -109,24 +99,23 @@ public class TrajAnimationUI : MonoBehaviour {
         frameSlider.onValueChanged.AddListener(OnSliderChanged);
         y -= 30 + 4;
 
-        frameLabel = AddTextGO(canvasGO.transform, "-- / --", W, 18, new Vector2(0, y - 9), 16);
+        frameLabel = VRUIFactory.CreateCenteredLabel(canvasGO.transform, "-- / --", W, 18, 16, new Vector2(0, y - 9), alignment: TextAnchor.MiddleLeft);
         y -= 18 + pad;
 
         // Playback buttons row
         float bW = (W - pad * 4) / 3f;
         float bX = -(W / 2f) + pad + bW / 2f;
 
-        var prevBtn = AddButton(canvasGO.transform, "◀ Prev", new Vector2(bW, 42), new Vector2(bX, y - 21), btnColor);
+        var prevBtn = VRUIFactory.CreateButton(canvasGO.transform, "◀ Prev", new Vector2(bW, 42), new Vector2(bX, y - 21), btnColor, fontSize: 18);
         prevBtn.onClick.AddListener(() => StepFrame(forward: false));
         bX += bW + pad;
 
-        playBtn = AddButton(canvasGO.transform, "▶ Play", new Vector2(bW, 42), new Vector2(bX, y - 21), btnGreen);
-        playBtn.GetComponentInChildren<Text>(); // already added by AddButton
+        playBtn = VRUIFactory.CreateButton(canvasGO.transform, "▶ Play", new Vector2(bW, 42), new Vector2(bX, y - 21), btnGreen, fontSize: 18);
         playBtnLabel = playBtn.GetComponentInChildren<Text>();
         playBtn.onClick.AddListener(OnPlayPause);
         bX += bW + pad;
 
-        var nextBtn = AddButton(canvasGO.transform, "Next ▶", new Vector2(bW, 42), new Vector2(bX, y - 21), btnColor);
+        var nextBtn = VRUIFactory.CreateButton(canvasGO.transform, "Next ▶", new Vector2(bW, 42), new Vector2(bX, y - 21), btnColor, fontSize: 18);
         nextBtn.onClick.AddListener(() => StepFrame(forward: true));
         y -= 42 + pad;
 
@@ -265,94 +254,12 @@ public class TrajAnimationUI : MonoBehaviour {
 
     // ── UI helpers ────────────────────────────────────────────────────────────
 
-    static Font GetFont() =>
-        Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ??
-        Resources.GetBuiltinResource<Font>("Arial.ttf");
-
-    void AddBg(Transform parent, float w, float h) {
-        var go = new GameObject("BG"); go.transform.SetParent(parent, false);
-        var img = go.AddComponent<Image>(); img.color = bgColor;
-        var rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta = new Vector2(w, h);
-        rt.anchoredPosition = Vector2.zero;
-    }
-
+    /// <summary>Places a left-aligned label at the current top-down cursor y and advances it.</summary>
     float AddLabel(Transform parent, string text, float w, int fontSize, FontStyle style, ref float y, float pad) {
         float h = fontSize + 6;
-        AddTextGO(parent, text, w, h, new Vector2(0, y - h / 2f), fontSize, style);
+        VRUIFactory.CreateCenteredLabel(parent, text, w, h, fontSize, new Vector2(0, y - h / 2f), style, alignment: TextAnchor.MiddleLeft);
         y -= h + pad * 0.5f;
         return y;
-    }
-
-    Text AddTextGO(Transform parent, string text, float w, float h, Vector2 pos, int fontSize, FontStyle style = FontStyle.Normal) {
-        var go = new GameObject("Txt"); go.transform.SetParent(parent, false);
-        var t = go.AddComponent<Text>();
-        t.text = text; t.font = GetFont(); t.fontSize = fontSize;
-        t.color = Color.white; t.alignment = TextAnchor.MiddleLeft;
-        t.fontStyle = style;
-        var rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta = new Vector2(w, h);
-        rt.anchoredPosition = pos;
-        return t;
-    }
-
-    InputField AddInputField(Transform parent, float w, float h, float y, string placeholder) {
-        var go = new GameObject("Input"); go.transform.SetParent(parent, false);
-        var img = go.AddComponent<Image>(); img.color = new Color(0.15f, 0.15f, 0.20f, 1f);
-        var input = go.AddComponent<InputField>();
-        var rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta = new Vector2(w, h);
-        rt.anchoredPosition = new Vector2(0, y - h / 2f);
-
-        var textGO = new GameObject("Text"); textGO.transform.SetParent(go.transform, false);
-        var t = textGO.AddComponent<Text>();
-        t.font = GetFont(); t.fontSize = 14; t.color = Color.white;
-        t.alignment = TextAnchor.MiddleLeft;
-        var trt = textGO.GetComponent<RectTransform>();
-        trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
-        trt.offsetMin = new Vector2(6, 0); trt.offsetMax = new Vector2(-6, 0);
-        input.textComponent = t;
-        input.text = placeholder;
-
-        var phGO = new GameObject("Placeholder"); phGO.transform.SetParent(go.transform, false);
-        var ph = phGO.AddComponent<Text>();
-        ph.font = GetFont(); ph.fontSize = 14; ph.fontStyle = FontStyle.Italic;
-        ph.color = new Color(0.6f, 0.6f, 0.6f, 0.8f);
-        ph.text = "ruta al archivo..."; ph.alignment = TextAnchor.MiddleLeft;
-        var phrt = phGO.GetComponent<RectTransform>();
-        phrt.anchorMin = Vector2.zero; phrt.anchorMax = Vector2.one;
-        phrt.offsetMin = new Vector2(6, 0); phrt.offsetMax = new Vector2(-6, 0);
-        input.placeholder = ph;
-
-        return input;
-    }
-
-    Button AddButton(Transform parent, string label, Vector2 size, Vector2 pos, Color color) {
-        var go = new GameObject("Btn_" + label); go.transform.SetParent(parent, false);
-        var img = go.AddComponent<Image>(); img.color = color;
-        var btn = go.AddComponent<Button>();
-        var cb = btn.colors;
-        cb.normalColor = color;
-        cb.highlightedColor = Color.Lerp(color, Color.white, 0.25f);
-        cb.pressedColor     = Color.Lerp(color, Color.black, 0.30f);
-        btn.colors = cb;
-        var rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta = size; rt.anchoredPosition = pos;
-
-        var tGO = new GameObject("Label"); tGO.transform.SetParent(go.transform, false);
-        var t = tGO.AddComponent<Text>();
-        t.text = label; t.font = GetFont(); t.fontSize = 18;
-        t.fontStyle = FontStyle.Bold; t.color = Color.white;
-        t.alignment = TextAnchor.MiddleCenter;
-        var trt = tGO.GetComponent<RectTransform>();
-        trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
-        trt.offsetMin = trt.offsetMax = Vector2.zero;
-
-        return btn;
     }
 
     Slider AddSlider(Transform parent, float w, float h, Vector2 pos) {
