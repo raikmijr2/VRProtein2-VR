@@ -13,8 +13,7 @@ public class EffectsVRUI : MonoBehaviour {
     Font font;
 
     void Start() {
-        font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf")
-            ?? Resources.GetBuiltinResource<Font>("Arial.ttf");
+        font = VRUIFactory.GetFont();
 
         GameObject contentGO = GameObject.Find("CanvasMainUIVR/Selection Scroll View/Viewport/Content");
         if (contentGO == null) {
@@ -114,73 +113,14 @@ public class EffectsVRUI : MonoBehaviour {
         vle.preferredWidth = 36f;
 
         // Slider
-        GameObject sliderGO = BuildSlider(row.transform, min, max, current);
-        Slider sl = sliderGO.GetComponent<Slider>();
+        Slider sl = VRUIFactory.CreateSlider(row.transform, min, max, current);
         sl.onValueChanged.AddListener(v => {
             vt.text = v.ToString("F2");
             onChange(v);
         });
-        LayoutElement sle = sliderGO.AddComponent<LayoutElement>();
+        LayoutElement sle = sl.gameObject.AddComponent<LayoutElement>();
         sle.preferredWidth = 100f;
         sle.flexibleWidth  = 1f;
-    }
-
-    static GameObject BuildSlider(Transform parent, float min, float max, float value) {
-        GameObject root = new GameObject("Slider");
-        root.transform.SetParent(parent, false);
-        root.AddComponent<Image>().color = Color.clear;
-        Slider sl = root.AddComponent<Slider>();
-
-        GameObject bg = new GameObject("Background");
-        bg.transform.SetParent(root.transform, false);
-        bg.AddComponent<Image>().color = new Color(0.12f, 0.12f, 0.18f, 1f);
-        RectTransform bgRT = bg.GetComponent<RectTransform>();
-        bgRT.anchorMin = new Vector2(0f, 0.3f);
-        bgRT.anchorMax = new Vector2(1f, 0.7f);
-        bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
-
-        GameObject fillArea = new GameObject("Fill Area");
-        fillArea.transform.SetParent(root.transform, false);
-        fillArea.AddComponent<Image>().color = Color.clear;
-        RectTransform fillAreaRT = fillArea.GetComponent<RectTransform>();
-        fillAreaRT.anchorMin = new Vector2(0f, 0.3f);
-        fillAreaRT.anchorMax = new Vector2(1f, 0.7f);
-        fillAreaRT.offsetMin = new Vector2(5f, 0f);
-        fillAreaRT.offsetMax = new Vector2(-5f, 0f);
-
-        GameObject fill = new GameObject("Fill");
-        fill.transform.SetParent(fillArea.transform, false);
-        fill.AddComponent<Image>().color = new Color(0.25f, 0.55f, 1f, 1f);
-        RectTransform fillRT = fill.GetComponent<RectTransform>();
-        fillRT.anchorMin = Vector2.zero;
-        fillRT.anchorMax = new Vector2(0f, 1f);
-        fillRT.offsetMin = Vector2.zero;
-        fillRT.offsetMax = new Vector2(10f, 0f);
-
-        GameObject handleArea = new GameObject("Handle Slide Area");
-        handleArea.transform.SetParent(root.transform, false);
-        handleArea.AddComponent<Image>().color = Color.clear;
-        RectTransform handleAreaRT = handleArea.GetComponent<RectTransform>();
-        handleAreaRT.anchorMin = Vector2.zero;
-        handleAreaRT.anchorMax = Vector2.one;
-        handleAreaRT.offsetMin = new Vector2(10f, 0f);
-        handleAreaRT.offsetMax = new Vector2(-10f, 0f);
-
-        GameObject handle = new GameObject("Handle");
-        handle.transform.SetParent(handleArea.transform, false);
-        handle.AddComponent<Image>().color = new Color(0.6f, 0.85f, 1f, 1f);
-        RectTransform handleRT = handle.GetComponent<RectTransform>();
-        handleRT.sizeDelta = new Vector2(18f, 0f);
-        handleRT.anchorMin = Vector2.zero;
-        handleRT.anchorMax = new Vector2(0f, 1f);
-
-        sl.fillRect   = fillRT;
-        sl.handleRect = handleRT;
-        sl.direction  = Slider.Direction.LeftToRight;
-        sl.minValue   = min;
-        sl.maxValue   = max;
-        sl.value      = value;
-        return root;
     }
 }
 }

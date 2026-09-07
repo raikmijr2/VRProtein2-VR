@@ -129,6 +129,79 @@ public static class VRUIFactory {
         return input;
     }
 
+    /// <summary>
+    /// Standard slider look (dark track, blue fill, light handle) shared by
+    /// EffectsPanelVR and EffectsVRUI - their inner Background/Fill Area/Fill/
+    /// Handle hierarchy was verified byte-identical, only the outer anchoring
+    /// differed. Pass anchorMin/anchorMax for a manually-anchored row (like
+    /// EffectsPanelVR's percentage layout); leave them null when the parent
+    /// controls sizing via a Unity Layout Group (like EffectsVRUI).
+    /// </summary>
+    public static Slider CreateSlider(Transform parent, float min, float max, float value,
+            Vector2? anchorMin = null, Vector2? anchorMax = null) {
+        var root = new GameObject("Slider");
+        root.transform.SetParent(parent, false);
+        root.AddComponent<Image>().color = Color.clear;
+        var sl = root.AddComponent<Slider>();
+        if (anchorMin.HasValue && anchorMax.HasValue) {
+            var rootRT = root.GetComponent<RectTransform>();
+            rootRT.anchorMin = anchorMin.Value;
+            rootRT.anchorMax = anchorMax.Value;
+            rootRT.offsetMin = rootRT.offsetMax = Vector2.zero;
+        }
+
+        var bg = new GameObject("Background");
+        bg.transform.SetParent(root.transform, false);
+        bg.AddComponent<Image>().color = new Color(0.12f, 0.12f, 0.18f, 1f);
+        var bgRT = bg.GetComponent<RectTransform>();
+        bgRT.anchorMin = new Vector2(0f, 0.3f);
+        bgRT.anchorMax = new Vector2(1f, 0.7f);
+        bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
+
+        var fillArea = new GameObject("Fill Area");
+        fillArea.transform.SetParent(root.transform, false);
+        fillArea.AddComponent<Image>().color = Color.clear;
+        var fillAreaRT = fillArea.GetComponent<RectTransform>();
+        fillAreaRT.anchorMin = new Vector2(0f, 0.3f);
+        fillAreaRT.anchorMax = new Vector2(1f, 0.7f);
+        fillAreaRT.offsetMin = new Vector2(5f, 0f);
+        fillAreaRT.offsetMax = new Vector2(-5f, 0f);
+
+        var fill = new GameObject("Fill");
+        fill.transform.SetParent(fillArea.transform, false);
+        fill.AddComponent<Image>().color = new Color(0.25f, 0.55f, 1f, 1f);
+        var fillRT = fill.GetComponent<RectTransform>();
+        fillRT.anchorMin = Vector2.zero;
+        fillRT.anchorMax = new Vector2(0f, 1f);
+        fillRT.offsetMin = Vector2.zero;
+        fillRT.offsetMax = new Vector2(10f, 0f);
+
+        var handleArea = new GameObject("Handle Slide Area");
+        handleArea.transform.SetParent(root.transform, false);
+        handleArea.AddComponent<Image>().color = Color.clear;
+        var handleAreaRT = handleArea.GetComponent<RectTransform>();
+        handleAreaRT.anchorMin = Vector2.zero;
+        handleAreaRT.anchorMax = Vector2.one;
+        handleAreaRT.offsetMin = new Vector2(10f, 0f);
+        handleAreaRT.offsetMax = new Vector2(-10f, 0f);
+
+        var handle = new GameObject("Handle");
+        handle.transform.SetParent(handleArea.transform, false);
+        handle.AddComponent<Image>().color = new Color(0.6f, 0.85f, 1f, 1f);
+        var handleRT = handle.GetComponent<RectTransform>();
+        handleRT.sizeDelta = new Vector2(18f, 0f);
+        handleRT.anchorMin = Vector2.zero;
+        handleRT.anchorMax = new Vector2(0f, 1f);
+
+        sl.fillRect   = fillRT;
+        sl.handleRect = handleRT;
+        sl.direction  = Slider.Direction.LeftToRight;
+        sl.minValue   = min;
+        sl.maxValue   = max;
+        sl.value      = value;
+        return sl;
+    }
+
     /// <summary>Solid-color button with a bold centered label, standard hover/press tint.</summary>
     public static Button CreateButton(Transform parent, string label, Vector2 size, Vector2 pos, Color color,
             int fontSize = 16, FontStyle style = FontStyle.Bold, float highlightBlend = 0.25f) {

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UMol.API;
-using HTC.UnityPlugin.Pointer3D;
 
 namespace UMol {
 
@@ -30,24 +29,8 @@ public class EffectsPanelVR : MonoBehaviour {
                      + Pad * 2;
 
         // ── Canvas ────────────────────────────────────────────────────────
-        GameObject canvasGO = new GameObject("EffectsPanelVR");
-        canvasGO.transform.position = spawnPosition;
+        GameObject canvasGO = VRUIFactory.CreateWorldSpaceCanvas("EffectsPanelVR", spawnPosition, new Vector2(PanelW, panelH));
         canvasGO.transform.rotation = Quaternion.identity;
-
-        Canvas canvas = canvasGO.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-
-        CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
-        scaler.dynamicPixelsPerUnit = 10f;
-        canvasGO.AddComponent<GraphicRaycaster>();
-        canvasGO.AddComponent<CanvasRaycastTarget>();
-
-        PointerMoveUI mover = canvasGO.AddComponent<PointerMoveUI>();
-        mover.moveParent = false;
-
-        RectTransform canvasRT = canvasGO.GetComponent<RectTransform>();
-        canvasRT.sizeDelta = new Vector2(PanelW, panelH);
-        canvasGO.transform.localScale = Vector3.one * 0.003f;
 
         // ── Fondo ─────────────────────────────────────────────────────────
         AddImage(canvasGO.transform, "Background", bgColor,
@@ -107,7 +90,7 @@ public class EffectsPanelVR : MonoBehaviour {
             Color.white, TextAnchor.MiddleLeft,
             new Vector2(0f, 0f), new Vector2(0.42f, 1f));
 
-        Slider sl = BuildSlider(rowGO.transform, min, max, current,
+        Slider sl = VRUIFactory.CreateSlider(rowGO.transform, min, max, current,
             new Vector2(0.42f, 0.1f), new Vector2(0.72f, 0.9f));
         sl.onValueChanged.AddListener(v => {
             valText.text = v.ToString("F2");
@@ -115,69 +98,6 @@ public class EffectsPanelVR : MonoBehaviour {
         });
 
         curY += SliderH + Pad * 0.5f;
-    }
-
-    static Slider BuildSlider(Transform parent, float min, float max, float value,
-                               Vector2 anchorMin, Vector2 anchorMax) {
-        GameObject root = new GameObject("Slider");
-        root.transform.SetParent(parent, false);
-        root.AddComponent<Image>().color = Color.clear;
-        Slider sl = root.AddComponent<Slider>();
-        RectTransform rootRT = root.GetComponent<RectTransform>();
-        rootRT.anchorMin = anchorMin;
-        rootRT.anchorMax = anchorMax;
-        rootRT.offsetMin = rootRT.offsetMax = Vector2.zero;
-
-        GameObject bg = new GameObject("Background");
-        bg.transform.SetParent(root.transform, false);
-        bg.AddComponent<Image>().color = new Color(0.12f, 0.12f, 0.18f, 1f);
-        RectTransform bgRT = bg.GetComponent<RectTransform>();
-        bgRT.anchorMin = new Vector2(0f, 0.3f);
-        bgRT.anchorMax = new Vector2(1f, 0.7f);
-        bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
-
-        GameObject fillArea = new GameObject("Fill Area");
-        fillArea.transform.SetParent(root.transform, false);
-        fillArea.AddComponent<Image>().color = Color.clear;
-        RectTransform fillAreaRT = fillArea.GetComponent<RectTransform>();
-        fillAreaRT.anchorMin = new Vector2(0f, 0.3f);
-        fillAreaRT.anchorMax = new Vector2(1f, 0.7f);
-        fillAreaRT.offsetMin = new Vector2(5f, 0f);
-        fillAreaRT.offsetMax = new Vector2(-5f, 0f);
-
-        GameObject fill = new GameObject("Fill");
-        fill.transform.SetParent(fillArea.transform, false);
-        fill.AddComponent<Image>().color = new Color(0.25f, 0.55f, 1f, 1f);
-        RectTransform fillRT = fill.GetComponent<RectTransform>();
-        fillRT.anchorMin = Vector2.zero;
-        fillRT.anchorMax = new Vector2(0f, 1f);
-        fillRT.offsetMin = Vector2.zero;
-        fillRT.offsetMax = new Vector2(10f, 0f);
-
-        GameObject handleArea = new GameObject("Handle Slide Area");
-        handleArea.transform.SetParent(root.transform, false);
-        handleArea.AddComponent<Image>().color = Color.clear;
-        RectTransform handleAreaRT = handleArea.GetComponent<RectTransform>();
-        handleAreaRT.anchorMin = Vector2.zero;
-        handleAreaRT.anchorMax = Vector2.one;
-        handleAreaRT.offsetMin = new Vector2(10f, 0f);
-        handleAreaRT.offsetMax = new Vector2(-10f, 0f);
-
-        GameObject handle = new GameObject("Handle");
-        handle.transform.SetParent(handleArea.transform, false);
-        handle.AddComponent<Image>().color = new Color(0.6f, 0.85f, 1f, 1f);
-        RectTransform handleRT = handle.GetComponent<RectTransform>();
-        handleRT.sizeDelta = new Vector2(18f, 0f);
-        handleRT.anchorMin = Vector2.zero;
-        handleRT.anchorMax = new Vector2(0f, 1f);
-
-        sl.fillRect   = fillRT;
-        sl.handleRect = handleRT;
-        sl.direction  = Slider.Direction.LeftToRight;
-        sl.minValue   = min;
-        sl.maxValue   = max;
-        sl.value      = value;
-        return sl;
     }
 
     void MakeAnchoredText(Transform parent, string name, string text,
@@ -188,7 +108,7 @@ public class EffectsPanelVR : MonoBehaviour {
         go.transform.SetParent(parent, false);
         Text t      = go.AddComponent<Text>();
         t.text      = text;
-        t.font      = GetFont();
+        t.font      = VRUIFactory.GetFont();
         t.fontSize  = size;
         t.fontStyle = style;
         t.color     = color;
@@ -207,7 +127,7 @@ public class EffectsPanelVR : MonoBehaviour {
         go.transform.SetParent(parent, false);
         Text t      = go.AddComponent<Text>();
         t.text      = text;
-        t.font      = GetFont();
+        t.font      = VRUIFactory.GetFont();
         t.fontSize  = size;
         t.fontStyle = style;
         t.color     = color;
@@ -233,10 +153,5 @@ public class EffectsPanelVR : MonoBehaviour {
         rt.offsetMax = offsetMax;
     }
 
-    static Font GetFont() {
-        Font f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        return f;
-    }
 }
 }
