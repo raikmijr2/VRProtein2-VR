@@ -8,7 +8,6 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UMol.API;
 using MiniJSON;
-using HTC.UnityPlugin.Pointer3D;
 
 namespace UMol {
 
@@ -472,80 +471,70 @@ public class DataverseProteinUI : MonoBehaviour {
 
     void BuildPanel() {
         float W = 500f, H = 640f, pad = 12f;
-        var go = new GameObject("DataversePanelRoot");
-        go.transform.position = spawnPosition;
-        var canvas = go.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-        go.AddComponent<CanvasScaler>().dynamicPixelsPerUnit = 10f;
-        go.AddComponent<GraphicRaycaster>();
-        go.AddComponent<CanvasRaycastTarget>();
-        go.AddComponent<PointerMoveUI>().moveParent = false;
-        var rt = go.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(W, H);
-        go.transform.localScale = Vector3.one * 0.003f;
+        var go = VRUIFactory.CreateWorldSpaceCanvas("DataversePanelRoot", spawnPosition, new Vector2(W, H));
 
         // BG
-        MakeImage(go.transform, "BG", bg, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+        VRUIFactory.CreateBackgroundImage(go.transform, bg);
 
         float y = H / 2f - pad;
 
         // Title
-        MakeLabel(go.transform, "SIMULACION MOLECULAR", W, 26, FontStyle.Bold, new Vector2(0, y - 13));
+        VRUIFactory.CreateCenteredLabel(go.transform, "SIMULACION MOLECULAR", W, 26 + 6, 26, new Vector2(0, y - 13), FontStyle.Bold);
         y -= 26 + pad;
 
         // Separator
         y -= 4;
 
         // Mode row
-        MakeLabel(go.transform, "Tipo de lisina:", W, 18, FontStyle.Bold, new Vector2(0, y - 9));
+        VRUIFactory.CreateCenteredLabel(go.transform, "Tipo de lisina:", W, 18 + 6, 18, new Vector2(0, y - 9), FontStyle.Bold);
         y -= 18 + 6;
         float bW2 = W / 2f - pad * 1.5f;
-        modeButtons[0] = MakeBtn(go.transform, "Sin Modificar", new Vector2(bW2, 44), new Vector2(-bW2 / 2f - pad / 2f, y - 22), btnActive);
+        modeButtons[0] = VRUIFactory.CreateButton(go.transform, "Sin Modificar", new Vector2(bW2, 44), new Vector2(-bW2 / 2f - pad / 2f, y - 22), btnActive, fontSize: 17);
         modeButtons[0].onClick.AddListener(() => SelectMode(Mode.Unmodified));
-        modeButtons[1] = MakeBtn(go.transform, "Modificada",    new Vector2(bW2, 44), new Vector2( bW2 / 2f + pad / 2f, y - 22), btnBlue);
+        modeButtons[1] = VRUIFactory.CreateButton(go.transform, "Modificada",    new Vector2(bW2, 44), new Vector2( bW2 / 2f + pad / 2f, y - 22), btnBlue, fontSize: 17);
         modeButtons[1].onClick.AddListener(() => SelectMode(Mode.Modified));
         y -= 44 + pad;
 
         // Run row
-        MakeLabel(go.transform, "Simulacion:", W, 18, FontStyle.Bold, new Vector2(0, y - 9));
+        VRUIFactory.CreateCenteredLabel(go.transform, "Simulacion:", W, 18 + 6, 18, new Vector2(0, y - 9), FontStyle.Bold);
         y -= 18 + 6;
-        runButtons[0] = MakeBtn(go.transform, "Run 1", new Vector2(bW2, 44), new Vector2(-bW2 / 2f - pad / 2f, y - 22), btnActive);
+        runButtons[0] = VRUIFactory.CreateButton(go.transform, "Run 1", new Vector2(bW2, 44), new Vector2(-bW2 / 2f - pad / 2f, y - 22), btnActive, fontSize: 17);
         runButtons[0].onClick.AddListener(() => SelectRun(Run.Run1));
-        runButtons[1] = MakeBtn(go.transform, "Run 2", new Vector2(bW2, 44), new Vector2( bW2 / 2f + pad / 2f, y - 22), btnBlue);
+        runButtons[1] = VRUIFactory.CreateButton(go.transform, "Run 2", new Vector2(bW2, 44), new Vector2( bW2 / 2f + pad / 2f, y - 22), btnBlue, fontSize: 17);
         runButtons[1].onClick.AddListener(() => SelectRun(Run.Run2));
         y -= 44 + pad;
 
         // DCD count row: [ - ]  [ 5 ]  [ + ]
-        MakeLabel(go.transform, "Archivos DCD (aprox. 100 frames c/u):", W, 16, FontStyle.Normal, new Vector2(0, y - 8));
+        VRUIFactory.CreateCenteredLabel(go.transform, "Archivos DCD (aprox. 100 frames c/u):", W, 16 + 6, 16, new Vector2(0, y - 8));
         y -= 16 + 6;
         float btnS = 50f;
-        var btnMinus = MakeBtn(go.transform, "-", new Vector2(btnS, 44), new Vector2(-80f, y - 22), btnBlue);
+        var btnMinus = VRUIFactory.CreateButton(go.transform, "-", new Vector2(btnS, 44), new Vector2(-80f, y - 22), btnBlue, fontSize: 17);
         btnMinus.onClick.AddListener(() => { nDCDFiles = Mathf.Max(1, nDCDFiles - 1); UpdateDCDLabel(); });
-        AddHoldBehavior(btnMinus.gameObject, () => { nDCDFiles = Mathf.Max(1, nDCDFiles - 1); UpdateDCDLabel(); });
-        dcdCountLabel = MakeTextGO(go.transform, "5", 80f, 44f, new Vector2(0f, y - 22), 22);
-        var btnPlus  = MakeBtn(go.transform, "+", new Vector2(btnS, 44), new Vector2( 80f, y - 22), btnBlue);
+        VRUIFactory.AddHoldBehavior(btnMinus.gameObject, () => { nDCDFiles = Mathf.Max(1, nDCDFiles - 1); UpdateDCDLabel(); });
+        dcdCountLabel = VRUIFactory.CreateCenteredLabel(go.transform, "5", 80f, 44f, 22, new Vector2(0f, y - 22));
+        var btnPlus  = VRUIFactory.CreateButton(go.transform, "+", new Vector2(btnS, 44), new Vector2( 80f, y - 22), btnBlue, fontSize: 17);
         btnPlus.onClick.AddListener(() => { nDCDFiles = Mathf.Min(50, nDCDFiles + 1); UpdateDCDLabel(); });
-        AddHoldBehavior(btnPlus.gameObject, () => { nDCDFiles = Mathf.Min(50, nDCDFiles + 1); UpdateDCDLabel(); });
+        VRUIFactory.AddHoldBehavior(btnPlus.gameObject, () => { nDCDFiles = Mathf.Min(50, nDCDFiles + 1); UpdateDCDLabel(); });
         y -= 44 + pad;
 
         // Progress text
-        progressText = MakeTextGO(go.transform, "", W - pad * 2, 24f, new Vector2(0, y - 12), 15);
+        progressText = VRUIFactory.CreateCenteredLabel(go.transform, "", W - pad * 2, 24f, 15, new Vector2(0, y - 12));
         y -= 24 + 4;
 
         // Status (taller to fit multi-line error messages with dir names)
-        statusText = MakeTextGO(go.transform, "Iniciando...", W - pad * 2, 80f, new Vector2(0, y - 40), 14);
+        statusText = VRUIFactory.CreateCenteredLabel(go.transform, "Iniciando...", W - pad * 2, 80f, 14, new Vector2(0, y - 40));
         statusText.alignment = TextAnchor.UpperCenter;
         statusText.horizontalOverflow = HorizontalWrapMode.Wrap;
         statusText.verticalOverflow   = VerticalWrapMode.Overflow;
         y -= 80 + pad;
 
         // Download button
-        downloadBtn = MakeBtn(go.transform, "DESCARGAR Y VISUALIZAR", new Vector2(W - pad * 2, 56), new Vector2(0, y - 28), btnBlue);
+        downloadBtn = VRUIFactory.CreateButton(go.transform, "DESCARGAR Y VISUALIZAR", new Vector2(W - pad * 2, 56), new Vector2(0, y - 28), btnBlue, fontSize: 17);
         downloadBtn.onClick.AddListener(OnDownloadClicked);
         y -= 56 + pad;
 
         // Go-to button (re-centers camera on the last loaded structure)
-        gotoBtn = MakeBtn(go.transform, "IR A PROTEINA", new Vector2(W - pad * 2, 44), new Vector2(0, y - 22), btnRed);
+        gotoBtn = VRUIFactory.CreateButton(go.transform, "IR A PROTEINA", new Vector2(W - pad * 2, 44), new Vector2(0, y - 22), btnRed, fontSize: 17);
         gotoBtn.onClick.AddListener(OnGotoClicked);
         gotoBtn.interactable = false;
     }
@@ -577,66 +566,6 @@ public class DataverseProteinUI : MonoBehaviour {
     static void SetBtnColor(Button b, Color c) {
         b.GetComponent<Image>().color = c;
         var cb = b.colors; cb.normalColor = c; b.colors = cb;
-    }
-
-    // ── UI factory helpers ────────────────────────────────────────────────────
-
-    static Font GetFont() =>
-        Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ??
-        Resources.GetBuiltinResource<Font>("Arial.ttf");
-
-    static void MakeImage(Transform p, string name, Color c, Vector2 aMin, Vector2 aMax, Vector2 oMin, Vector2 oMax) {
-        var go = new GameObject(name); go.transform.SetParent(p, false);
-        var img = go.AddComponent<Image>(); img.color = c;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = aMin; r.anchorMax = aMax; r.offsetMin = oMin; r.offsetMax = oMax;
-    }
-
-    static void MakeLabel(Transform p, string text, float w, int fs, FontStyle style, Vector2 pos) {
-        var go = new GameObject("Lbl"); go.transform.SetParent(p, false);
-        var t = go.AddComponent<Text>();
-        t.text = text; t.font = GetFont(); t.fontSize = fs; t.fontStyle = style;
-        t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
-        r.sizeDelta = new Vector2(w, fs + 6); r.anchoredPosition = pos;
-    }
-
-    static Text MakeTextGO(Transform p, string text, float w, float h, Vector2 pos, int fs) {
-        var go = new GameObject("Txt"); go.transform.SetParent(p, false);
-        var t = go.AddComponent<Text>();
-        t.text = text; t.font = GetFont(); t.fontSize = fs;
-        t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
-        r.sizeDelta = new Vector2(w, h); r.anchoredPosition = pos;
-        return t;
-    }
-
-    static Button MakeBtn(Transform p, string label, Vector2 size, Vector2 pos, Color c) {
-        var go = new GameObject("Btn"); go.transform.SetParent(p, false);
-        var img = go.AddComponent<Image>(); img.color = c;
-        var btn = go.AddComponent<Button>();
-        var cb = btn.colors; cb.normalColor = c;
-        cb.highlightedColor = Color.Lerp(c, Color.white, 0.25f);
-        cb.pressedColor     = Color.Lerp(c, Color.black, 0.30f);
-        btn.colors = cb;
-        var r = go.GetComponent<RectTransform>();
-        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
-        r.sizeDelta = size; r.anchoredPosition = pos;
-        var tgo = new GameObject("L"); tgo.transform.SetParent(go.transform, false);
-        var t = tgo.AddComponent<Text>();
-        t.text = label; t.font = GetFont(); t.fontSize = 17; t.fontStyle = FontStyle.Bold;
-        t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
-        var tr = tgo.GetComponent<RectTransform>();
-        tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
-        tr.offsetMin = tr.offsetMax = Vector2.zero;
-        return btn;
-    }
-
-    static void AddHoldBehavior(GameObject go, System.Action action) {
-        var h = go.AddComponent<HoldButtonHelper>();
-        h.onHold = action;
     }
 
     // ── Data model ────────────────────────────────────────────────────────────

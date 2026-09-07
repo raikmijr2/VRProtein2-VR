@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using HTC.UnityPlugin.Pointer3D;
@@ -227,6 +228,12 @@ public static class VRUIFactory {
         tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
         tr.offsetMin = tr.offsetMax = Vector2.zero;
         return btn;
+    }
+
+    /// <summary>Makes a button (or any GameObject) repeat an action while held down.</summary>
+    public static void AddHoldBehavior(GameObject go, Action action) {
+        var h = go.AddComponent<HoldButtonHelper>();
+        h.onHold = action;
     }
 }
 }

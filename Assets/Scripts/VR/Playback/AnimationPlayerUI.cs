@@ -2,7 +2,6 @@
 using UnityEngine.UI;
 using UMol;
 using UMol.API;
-using HTC.UnityPlugin.Pointer3D;
 
 namespace UMol {
 
@@ -395,13 +394,6 @@ public class AnimationPlayerUI : MonoBehaviour {
         StepFrame(s, true);
     }
 
-    // ── Hold-to-repeat ────────────────────────────────────────────────────────
-
-    void AddHoldBehavior(GameObject go, System.Action action) {
-        var h = go.AddComponent<HoldButtonHelper>();
-        h.onHold = action;
-    }
-
     void OnSpeedDown() { speedIdx = Mathf.Max(0, speedIdx - 1);                       ApplySpeed(); if (speedLabel) speedLabel.text = SpeedText(); }
     void OnSpeedUp()   { speedIdx = Mathf.Min(speedSteps.Length - 1, speedIdx + 1);  ApplySpeed(); if (speedLabel) speedLabel.text = SpeedText(); }
 
@@ -471,22 +463,10 @@ public class AnimationPlayerUI : MonoBehaviour {
     void BuildPanel() {
         const float W = 420f, H = 460f;
 
-        var canvasGO = new GameObject("AnimationPlayerPanel");
-        canvasGO.transform.position = spawnPosition;
+        var canvasGO = VRUIFactory.CreateWorldSpaceCanvas("AnimationPlayerPanel", spawnPosition, new Vector2(W, H));
         canvasGO.transform.rotation = Quaternion.identity;
 
-        var canvas = canvasGO.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-        canvasGO.AddComponent<CanvasScaler>().dynamicPixelsPerUnit = 10f;
-        canvasGO.AddComponent<GraphicRaycaster>();
-        canvasGO.AddComponent<CanvasRaycastTarget>();
-        canvasGO.AddComponent<PointerMoveUI>().moveParent = false;
-
-        var canvasRT = canvasGO.GetComponent<RectTransform>();
-        canvasRT.sizeDelta = new Vector2(W, H);
-        canvasGO.transform.localScale = Vector3.one * 0.003f;
-
-        AddFullImage(canvasGO.transform, "Bg", bgColor);
+        VRUIFactory.CreateBackgroundImage(canvasGO.transform, bgColor);
 
         AddLabelFromTop(canvasGO.transform, "Title",
             "ANIMACIÓN MOLECULAR", 24, FontStyle.Bold,
@@ -547,15 +527,14 @@ public class AnimationPlayerUI : MonoBehaviour {
 
         var spdDownGO = MakeButtonGO(canvasGO.transform, "BtnSpeedDown", "−",
             new Vector2(-90f, spdY), new Vector2(spdBtnW, spdBtnH), () => OnSpeedDown());
-        AddHoldBehavior(spdDownGO, OnSpeedDown);
+        VRUIFactory.AddHoldBehavior(spdDownGO, OnSpeedDown);
 
-        speedLabel = AddCenteredLabel(canvasGO.transform, "SpeedLabel",
-            SpeedText(), 20, FontStyle.Bold,
-            new Vector2(0f, spdY), new Vector2(90f, spdBtnH));
+        speedLabel = VRUIFactory.CreateCenteredLabel(canvasGO.transform,
+            SpeedText(), 90f, spdBtnH, 20, new Vector2(0f, spdY), FontStyle.Bold);
 
         var spdUpGO = MakeButtonGO(canvasGO.transform, "BtnSpeedUp", "+",
             new Vector2(90f, spdY), new Vector2(spdBtnW, spdBtnH), () => OnSpeedUp());
-        AddHoldBehavior(spdUpGO, OnSpeedUp);
+        VRUIFactory.AddHoldBehavior(spdUpGO, OnSpeedUp);
 
         const float loopY = spdY - spdBtnH / 2f - 10f - 25f;
 
@@ -616,7 +595,7 @@ public class AnimationPlayerUI : MonoBehaviour {
         var go = new GameObject(name);
         go.transform.SetParent(parent, false);
         var t = go.AddComponent<Text>();
-        t.text = text; t.font = GetFont();
+        t.text = text; t.font = VRUIFactory.GetFont();
         t.fontSize = fontSize; t.fontStyle = style;
         t.color = Color.white; t.alignment = align;
         var rt = go.GetComponent<RectTransform>();
@@ -649,7 +628,7 @@ public class AnimationPlayerUI : MonoBehaviour {
         var textGO = new GameObject("Label");
         textGO.transform.SetParent(go.transform, false);
         var t = textGO.AddComponent<Text>();
-        t.text = label; t.font = GetFont();
+        t.text = label; t.font = VRUIFactory.GetFont();
         t.fontSize = 20; t.fontStyle = FontStyle.Bold;
         t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
         var trt = textGO.GetComponent<RectTransform>();
@@ -665,7 +644,7 @@ public class AnimationPlayerUI : MonoBehaviour {
         var go = new GameObject(name);
         go.transform.SetParent(parent, false);
         var t = go.AddComponent<Text>();
-        t.text = text; t.font = GetFont();
+        t.text = text; t.font = VRUIFactory.GetFont();
         t.fontSize = fontSize; t.fontStyle = style;
         t.color = Color.white; t.alignment = align;
         var rt = go.GetComponent<RectTransform>();
@@ -675,32 +654,6 @@ public class AnimationPlayerUI : MonoBehaviour {
         rt.offsetMin = new Vector2(padH,  -(yFromTop + height));
         rt.offsetMax = new Vector2(-padH, -yFromTop);
         return t;
-    }
-
-    Text AddCenteredLabel(Transform parent, string name, string text,
-                          int fontSize, FontStyle style,
-                          Vector2 anchoredPos, Vector2 size) {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var t = go.AddComponent<Text>();
-        t.text = text; t.font = GetFont();
-        t.fontSize = fontSize; t.fontStyle = style;
-        t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
-        var rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.pivot = new Vector2(0.5f, 0.5f);
-        rt.anchoredPosition = anchoredPos;
-        rt.sizeDelta = size;
-        return t;
-    }
-
-    static void AddFullImage(Transform parent, string name, Color color) {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        go.AddComponent<Image>().color = color;
-        var rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
     }
 
     static void AddSeparatorFromTop(Transform parent, string name, float yFromTop) {
@@ -726,10 +679,5 @@ public class AnimationPlayerUI : MonoBehaviour {
         btn.colors = cb;
     }
 
-    static Font GetFont() {
-        Font f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        return f;
-    }
 }
 }
