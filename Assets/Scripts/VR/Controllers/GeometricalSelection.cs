@@ -32,11 +32,7 @@
     ================================================================================
 */
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-
 using HTC.UnityPlugin.Vive;
-using HTC.UnityPlugin.Utility;
 
 namespace UMol {
 [RequireComponent(typeof(MeshFilter))]
@@ -54,43 +50,10 @@ public class GeometricalSelection : MonoBehaviour {
 
 	public Transform secondController;
 
-	// private float startDistance = -1.0f;
-
-	// void Update(){
-
-	// 	if(secondController == null){
-	// 		return;
-	// 	}
-	// 	if((ViveInput.GetPress(HandRole.RightHand, activationButton)
-	// 		&& ViveInput.GetPressDown(HandRole.LeftHand, activationButton)) ||
-	// 		(ViveInput.GetPressDown(HandRole.RightHand, activationButton)
-	// 		&& ViveInput.GetPress(HandRole.LeftHand, activationButton))
-	// 		){
-
-	// 		startDistance = Vector3.Distance(transform.position, secondController.position);
-	// 		return;
-	// 	}
-	// 	if(ViveInput.GetPressUp(HandRole.RightHand, activationButton) ||
-	// 		ViveInput.GetPressUp(HandRole.LeftHand, activationButton)) {
-
-	// 			startDistance = -1.0f;
-	// 			API.APIPython.selectInSphere(transform.position, transform.lossyScale.x);
-	// 		}
-
-	// 	if(ViveInput.GetPress(HandRole.RightHand, activationButton) &&
-	// 		ViveInput.GetPress(HandRole.LeftHand, activationButton)){
-
-	// 		if(startDistance == -1.0f){
-	// 			return;
-	// 		}
-
-	// 		float dist = Vector3.Distance(transform.position, secondController.position);
-	// 		float diff = (dist - startDistance)/10.0f;
-	// 		transform.localScale += Vector3.one * diff;
-	// 		transform.localScale = Mathf.Max(0.01f, transform.localScale.x) * Vector3.one;
-	// 		transform.localScale = Mathf.Min(1.1f, transform.localScale.x) * Vector3.one;
-	// 	}
-	// }
-
+	// Inert: the two-controller sphere/cube selection gesture was never finished
+	// (it referenced an undefined activationButton). Kept as a MonoBehaviour with
+	// just its two original fields (not deleted) because a live component instance
+	// still exists in Assets/_Recovery backup scenes, and removing the class would
+	// turn that into a broken "Missing Script" reference.
 }
 }

@@ -26,5 +26,8 @@ public class XRDebug : MonoBehaviour {
         }
     }
 
+    // No-op: currently logs nothing. Kept (not deleted) because a live component
+    // instance references this script in the main scene; implement or remove the
+    // component in the Editor if this is no longer needed.
     void LogXRState(string when) { }
 }
