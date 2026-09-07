@@ -635,7 +635,7 @@ public class DataverseProteinUI : MonoBehaviour {
     }
 
     static void AddHoldBehavior(GameObject go, System.Action action) {
-        var h = go.AddComponent<AnimationPlayerUI.HoldButtonHelper>();
+        var h = go.AddComponent<HoldButtonHelper>();
         h.onHold = action;
     }
 
