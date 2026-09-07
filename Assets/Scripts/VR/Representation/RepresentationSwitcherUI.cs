@@ -47,12 +47,6 @@ public class RepresentationSwitcherUI : MonoBehaviour {
     const string surfaceOverlaySel = "surface_overlay";
     static readonly Color btnSurface       = new Color(0.00f, 0.52f, 0.52f, 1f); // teal = overlay activo
 
-    // Residuos de disolvente/iones a excluir del "ligando" (igual que PDBLoaderUI)
-    static readonly HashSet<string> ligandSolventResidues = new HashSet<string> {
-        "HOH", "WAT", "TIP", "TIP3", "SOL", "NA", "CL", "MG", "ZN", "CA",
-        "K", "NA+", "CL-", "MG2+", "ZN2+", "CA2+", "FE", "MN", "NI", "CU"
-    };
-
     // Estado de extracción: representa qué reps fueron modificadas y sus átomos originales
     List<(UnityMolRepresentation rep, List<UnityMolAtom> originalAtoms, bool wasEnabled)> modifiedReps
         = new List<(UnityMolRepresentation, List<UnityMolAtom>, bool)>();
@@ -420,7 +414,7 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         bool anyLigand = false;
         foreach (var s in sm.loadedStructures) {
             foreach (var a in s.currentModel.allAtoms) {
-                if (a.isHET && !ligandSolventResidues.Contains(a.residue.name)) {
+                if (a.isHET && !LigandSolventTable.Residues.Contains(a.residue.name)) {
                     anyLigand = true;
                     break;
                 }
@@ -437,7 +431,7 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         foreach (var s in sm.loadedStructures) {
             var ligandAtoms = new List<UnityMolAtom>();
             foreach (var a in s.currentModel.allAtoms) {
-                if (a.isHET && !ligandSolventResidues.Contains(a.residue.name))
+                if (a.isHET && !LigandSolventTable.Residues.Contains(a.residue.name))
                     ligandAtoms.Add(a);
             }
             if (ligandAtoms.Count == 0) continue;

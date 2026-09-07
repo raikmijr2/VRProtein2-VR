@@ -23,12 +23,6 @@ public class PDBLoaderUI : MonoBehaviour {
     static readonly Color btnGreen  = new Color(0.10f, 0.55f, 0.25f, 1f);
     static readonly Color btnOrange = new Color(0.65f, 0.35f, 0.00f, 1f);
 
-    // Residuos a excluir del "ligando" (disolvente, iones comunes)
-    static readonly HashSet<string> solventResidues = new HashSet<string> {
-        "HOH", "WAT", "TIP", "TIP3", "SOL", "NA", "CL", "MG", "ZN", "CA",
-        "K", "NA+", "CL-", "MG2+", "ZN2+", "CA2+", "FE", "MN", "NI", "CU"
-    };
-
     InputField pdbInput;
     Text       statusText;
     Button     loadBtn;
@@ -104,7 +98,7 @@ public class PDBLoaderUI : MonoBehaviour {
         foreach (var a in atoms) {
             if (!a.isHET) {
                 proteinAtoms.Add(a);
-            } else if (!solventResidues.Contains(a.residue.name)) {
+            } else if (!LigandSolventTable.Residues.Contains(a.residue.name)) {
                 ligandAtoms.Add(a);
             }
         }
