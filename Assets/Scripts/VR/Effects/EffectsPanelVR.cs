@@ -33,7 +33,7 @@ public class EffectsPanelVR : MonoBehaviour {
         canvasGO.transform.rotation = Quaternion.identity;
 
         // ── Fondo ─────────────────────────────────────────────────────────
-        AddImage(canvasGO.transform, "Background", bgColor,
+        VRUIFactory.CreateAnchoredImage(canvasGO.transform, "Background", bgColor,
             Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
         // ── Título ────────────────────────────────────────────────────────
@@ -42,7 +42,7 @@ public class EffectsPanelVR : MonoBehaviour {
             new Vector2(0f, 1f), new Vector2(1f, 1f),
             new Vector2(0f, -TitleH), new Vector2(0f, 0f));
 
-        AddImage(canvasGO.transform, "Sep", new Color(1f, 1f, 1f, 0.15f),
+        VRUIFactory.CreateAnchoredImage(canvasGO.transform, "Sep", new Color(1f, 1f, 1f, 0.15f),
             new Vector2(0f, 1f), new Vector2(1f, 1f),
             new Vector2(Pad, -TitleH), new Vector2(-Pad, -(TitleH - 2f)));
 
@@ -138,19 +138,6 @@ public class EffectsPanelVR : MonoBehaviour {
         rt.offsetMin = new Vector2(4f, 2f);
         rt.offsetMax = new Vector2(-4f, -2f);
         return t;
-    }
-
-    static void AddImage(Transform parent, string name, Color color,
-                         Vector2 anchorMin, Vector2 anchorMax,
-                         Vector2 offsetMin, Vector2 offsetMax) {
-        GameObject go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        go.AddComponent<Image>().color = color;
-        RectTransform rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = anchorMin;
-        rt.anchorMax = anchorMax;
-        rt.offsetMin = offsetMin;
-        rt.offsetMax = offsetMax;
     }
 
 }

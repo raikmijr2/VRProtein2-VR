@@ -205,7 +205,8 @@ public static class VRUIFactory {
 
     /// <summary>Solid-color button with a bold centered label, standard hover/press tint.</summary>
     public static Button CreateButton(Transform parent, string label, Vector2 size, Vector2 pos, Color color,
-            int fontSize = 16, FontStyle style = FontStyle.Bold, float highlightBlend = 0.25f) {
+            int fontSize = 16, FontStyle style = FontStyle.Bold,
+            float highlightBlend = 0.25f, float pressBlend = 0.30f) {
         var go = new GameObject("Btn_" + label);
         go.transform.SetParent(parent, false);
         go.AddComponent<Image>().color = color;
@@ -213,7 +214,7 @@ public static class VRUIFactory {
         var cb = btn.colors;
         cb.normalColor      = color;
         cb.highlightedColor = Color.Lerp(color, Color.white, highlightBlend);
-        cb.pressedColor     = Color.Lerp(color, Color.black, 0.30f);
+        cb.pressedColor     = Color.Lerp(color, Color.black, pressBlend);
         btn.colors = cb;
         var r = go.GetComponent<RectTransform>();
         r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
@@ -228,6 +229,74 @@ public static class VRUIFactory {
         tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
         tr.offsetMin = tr.offsetMax = Vector2.zero;
         return btn;
+    }
+
+    /// <summary>
+    /// Button with a bold name on top and a smaller description below (used by
+    /// RepresentationSwitcherUI's representation-type and coloring-mode grids).
+    /// Pass highlightColor/pressedColor to override the standard lerp tint with
+    /// specific hand-picked colors (RepresentationSwitcherUI's rep-type buttons
+    /// use their own instead of a lerp from the base color).
+    /// </summary>
+    public static Button CreateTwoLineButton(Transform parent, string name, string label, string desc,
+            Vector2 pos, Vector2 size, Color color, Action onClick,
+            Color? highlightColor = null, Color? pressedColor = null, Color? selectedColor = null,
+            int nameFontSize = 20, int descFontSize = 14, Color? descColor = null) {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+
+        var bg = go.AddComponent<Image>();
+        bg.color = color;
+
+        var btn = go.AddComponent<Button>();
+        var cb = btn.colors;
+        cb.normalColor      = color;
+        cb.highlightedColor = highlightColor ?? Color.Lerp(color, Color.white, 0.25f);
+        cb.pressedColor     = pressedColor  ?? Color.Lerp(color, Color.black, 0.30f);
+        if (selectedColor.HasValue) cb.selectedColor = selectedColor.Value;
+        btn.colors = cb;
+        if (onClick != null) btn.onClick.AddListener(() => onClick());
+
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchoredPosition = pos;
+        rt.sizeDelta        = size;
+
+        var nameGO = new GameObject("Name");
+        nameGO.transform.SetParent(go.transform, false);
+        var nameText = nameGO.AddComponent<Text>();
+        nameText.text = label; nameText.font = GetFont();
+        nameText.fontSize = nameFontSize; nameText.fontStyle = FontStyle.Bold;
+        nameText.color = Color.white; nameText.alignment = TextAnchor.MiddleCenter;
+        var nameRT = nameGO.GetComponent<RectTransform>();
+        nameRT.anchorMin = new Vector2(0f, 0.45f); nameRT.anchorMax = new Vector2(1f, 1f);
+        nameRT.offsetMin = new Vector2(4, 0); nameRT.offsetMax = new Vector2(-4, -4);
+
+        var descGO = new GameObject("Desc");
+        descGO.transform.SetParent(go.transform, false);
+        var descText = descGO.AddComponent<Text>();
+        descText.text = desc; descText.font = GetFont();
+        descText.fontSize = descFontSize; descText.color = descColor ?? new Color(0.85f, 0.78f, 1f, 1f);
+        descText.alignment = TextAnchor.MiddleCenter;
+        var descRT = descGO.GetComponent<RectTransform>();
+        descRT.anchorMin = new Vector2(0f, 0f); descRT.anchorMax = new Vector2(1f, 0.5f);
+        descRT.offsetMin = new Vector2(4, 2); descRT.offsetMax = new Vector2(-4, 0);
+
+        return btn;
+    }
+
+    /// <summary>Anchor-stretched image (e.g. a title-bar separator line or panel background region).</summary>
+    public static Image CreateAnchoredImage(Transform parent, string name, Color color,
+            Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax) {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        var img = go.AddComponent<Image>();
+        img.color = color;
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = anchorMin;
+        rt.anchorMax = anchorMax;
+        rt.offsetMin = offsetMin;
+        rt.offsetMax = offsetMax;
+        return img;
     }
 
     /// <summary>Makes a button (or any GameObject) repeat an action while held down.</summary>

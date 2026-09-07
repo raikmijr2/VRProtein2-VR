@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UMol;
 using UMol.API;
-using HTC.UnityPlugin.Pointer3D;
 
 namespace UMol {
 
@@ -90,26 +88,6 @@ public class RepresentationSwitcherUI : MonoBehaviour {
     }
 
     void BuildPanel() {
-        // ── Canvas principal ──────────────────────────────────────────────
-        GameObject canvasGO = new GameObject("RepSwitcherPanel");
-        canvasGO.transform.position = spawnPosition;
-        canvasGO.transform.rotation = Quaternion.identity;
-
-        Canvas canvas = canvasGO.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-
-        CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
-        scaler.dynamicPixelsPerUnit = 10f;
-        canvasGO.AddComponent<GraphicRaycaster>();
-
-        // Registrar el Canvas en el sistema de raycasting de VIU
-        // Sin esto el rayo del mando no detecta el Canvas
-        canvasGO.AddComponent<CanvasRaycastTarget>();
-
-        // Hacer el panel agarrable con Grip
-        PointerMoveUI mover = canvasGO.AddComponent<PointerMoveUI>();
-        mover.moveParent = false;
-
         float btnW   = 190f;
         float btnH   = 65f;
         float pad    = 12f;
@@ -121,13 +99,12 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         float panelW = cols * btnW + (cols + 1) * pad;
         float panelH = titleH + rows * btnH + (rows + 1) * pad + resetH + pad + modeH + pad + colorToggleH + pad;
 
-        RectTransform canvasRT = canvasGO.GetComponent<RectTransform>();
-        canvasRT.sizeDelta = new Vector2(panelW, panelH);
-        canvasGO.transform.localScale = Vector3.one * 0.003f;
-        panelRT = canvasRT;
+        GameObject canvasGO = VRUIFactory.CreateWorldSpaceCanvas("RepSwitcherPanel", spawnPosition, new Vector2(panelW, panelH));
+        canvasGO.transform.rotation = Quaternion.identity;
+        panelRT = canvasGO.GetComponent<RectTransform>();
 
         // ── Fondo ─────────────────────────────────────────────────────────
-        AddImage(canvasGO.transform, "Background", bgColor,
+        VRUIFactory.CreateAnchoredImage(canvasGO.transform, "Background", bgColor,
             Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
         // ── Título ────────────────────────────────────────────────────────
@@ -135,7 +112,7 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         titleGO.transform.SetParent(canvasGO.transform, false);
         Text titleText = titleGO.AddComponent<Text>();
         titleText.text      = "REPRESENTACIÓN";
-        titleText.font      = GetFont();
+        titleText.font      = VRUIFactory.GetFont();
         titleText.fontSize  = 26;
         titleText.fontStyle = FontStyle.Bold;
         titleText.color     = Color.white;
@@ -148,7 +125,7 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         titleRT.offsetMax    = new Vector2(0, 0);
 
         // Separador debajo del título
-        AddImage(canvasGO.transform, "Separator", new Color(1f, 1f, 1f, 0.15f),
+        VRUIFactory.CreateAnchoredImage(canvasGO.transform, "Separator", new Color(1f, 1f, 1f, 0.15f),
             new Vector2(0f, 1f), new Vector2(1f, 1f),
             new Vector2(pad, -(titleH)), new Vector2(-pad, -(titleH - 2f)));
 
@@ -191,7 +168,7 @@ public class RepresentationSwitcherUI : MonoBehaviour {
             resetLabelGO.transform.SetParent(resetGO.transform, false);
             Text resetLabel      = resetLabelGO.AddComponent<Text>();
             resetLabel.text      = "Reiniciar";
-            resetLabel.font      = GetFont();
+            resetLabel.font      = VRUIFactory.GetFont();
             resetLabel.fontSize  = 20;
             resetLabel.fontStyle = FontStyle.Bold;
             resetLabel.color     = Color.white;
@@ -223,7 +200,7 @@ public class RepresentationSwitcherUI : MonoBehaviour {
             exportLabelGO.transform.SetParent(exportGO.transform, false);
             exportBtnLabel           = exportLabelGO.AddComponent<Text>();
             exportBtnLabel.text      = "Exportar PDB";
-            exportBtnLabel.font      = GetFont();
+            exportBtnLabel.font      = VRUIFactory.GetFont();
             exportBtnLabel.fontSize  = 20;
             exportBtnLabel.fontStyle = FontStyle.Bold;
             exportBtnLabel.color     = Color.white;
@@ -256,7 +233,7 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         modeLabelGO.transform.SetParent(modeGO.transform, false);
         modeBtnLabel = modeLabelGO.AddComponent<Text>();
         modeBtnLabel.text      = "Modo: TODO";
-        modeBtnLabel.font      = GetFont();
+        modeBtnLabel.font      = VRUIFactory.GetFont();
         modeBtnLabel.fontSize  = 20;
         modeBtnLabel.fontStyle = FontStyle.Bold;
         modeBtnLabel.color     = Color.white;
@@ -278,60 +255,11 @@ public class RepresentationSwitcherUI : MonoBehaviour {
 
     Button CreateRepButton(Transform parent, string label, string desc, string repCode,
                            Vector2 pos, Vector2 size) {
-        GameObject btnGO = new GameObject("Btn_" + repCode);
-        btnGO.transform.SetParent(parent, false);
-
-        Image bg = btnGO.AddComponent<Image>();
-        bg.color = btnNormal;
-
-        Button btn = btnGO.AddComponent<Button>();
-        ColorBlock cb = btn.colors;
-        cb.normalColor      = btnNormal;
-        cb.highlightedColor = btnHighlight;
-        cb.pressedColor     = btnPressed;
-        cb.selectedColor    = btnNormal;
-        cb.fadeDuration     = 0.1f;
-        btn.colors = cb;
-
         string capturedCode = repCode;
-        btn.onClick.AddListener(() => OnRepButtonClicked(capturedCode));
-
-        RectTransform rt = btnGO.GetComponent<RectTransform>();
-        rt.anchoredPosition = pos;
-        rt.sizeDelta        = size;
-
-        // Nombre de la representación (grande, arriba)
-        GameObject nameGO = new GameObject("Name");
-        nameGO.transform.SetParent(btnGO.transform, false);
-        Text nameText = nameGO.AddComponent<Text>();
-        nameText.text      = label;
-        nameText.font      = GetFont();
-        nameText.fontSize  = 24;
-        nameText.fontStyle = FontStyle.Bold;
-        nameText.color     = Color.white;
-        nameText.alignment = TextAnchor.MiddleCenter;
-        RectTransform nameRT = nameGO.GetComponent<RectTransform>();
-        nameRT.anchorMin = new Vector2(0f, 0.45f);
-        nameRT.anchorMax = new Vector2(1f, 1f);
-        nameRT.offsetMin = new Vector2(4, 0);
-        nameRT.offsetMax = new Vector2(-4, -4);
-
-        // Descripción (pequeña, abajo)
-        GameObject descGO = new GameObject("Desc");
-        descGO.transform.SetParent(btnGO.transform, false);
-        Text descText = descGO.AddComponent<Text>();
-        descText.text      = desc;
-        descText.font      = GetFont();
-        descText.fontSize  = 16;
-        descText.color     = new Color(0.8f, 0.9f, 1f, 1f);
-        descText.alignment = TextAnchor.MiddleCenter;
-        RectTransform descRT = descGO.GetComponent<RectTransform>();
-        descRT.anchorMin = new Vector2(0f, 0f);
-        descRT.anchorMax = new Vector2(1f, 0.5f);
-        descRT.offsetMin = new Vector2(4, 2);
-        descRT.offsetMax = new Vector2(-4, 0);
-
-        return btn;
+        return VRUIFactory.CreateTwoLineButton(parent, "Btn_" + repCode, label, desc, pos, size,
+            btnNormal, () => OnRepButtonClicked(capturedCode),
+            highlightColor: btnHighlight, pressedColor: btnPressed, selectedColor: btnNormal,
+            nameFontSize: 24, descFontSize: 16, descColor: new Color(0.8f, 0.9f, 1f, 1f));
     }
 
     void OnRepButtonClicked(string repCode) {
@@ -678,7 +606,7 @@ public class RepresentationSwitcherUI : MonoBehaviour {
         var lGO = new GameObject("Label"); lGO.transform.SetParent(go.transform, false);
         colorToggleBtnLabel = lGO.AddComponent<Text>();
         colorToggleBtnLabel.text      = "COLOREAR  ▼";
-        colorToggleBtnLabel.font      = GetFont();
+        colorToggleBtnLabel.font      = VRUIFactory.GetFont();
         colorToggleBtnLabel.fontSize  = 20;
         colorToggleBtnLabel.fontStyle = FontStyle.Bold;
         colorToggleBtnLabel.color     = Color.white;
@@ -730,36 +658,9 @@ public class RepresentationSwitcherUI : MonoBehaviour {
 
     Button CreateColorButton(Transform parent, string label, string desc,
                              float x, float y, float w, float h) {
-        var go = new GameObject("CBtn_" + label); go.transform.SetParent(parent, false);
         var btnColor = new Color(0.28f, 0.18f, 0.52f, 1f);
-        go.AddComponent<Image>().color = btnColor;
-        var btn = go.AddComponent<Button>();
-        var cb = btn.colors;
-        cb.normalColor      = btnColor;
-        cb.highlightedColor = Color.Lerp(btnColor, Color.white, 0.25f);
-        cb.pressedColor     = Color.Lerp(btnColor, Color.black, 0.30f);
-        btn.colors = cb;
-        var rt = go.GetComponent<RectTransform>();
-        rt.anchoredPosition = new Vector2(x, y);
-        rt.sizeDelta = new Vector2(w, h);
-
-        var nGO = new GameObject("N"); nGO.transform.SetParent(go.transform, false);
-        var nT  = nGO.AddComponent<Text>();
-        nT.text = label; nT.font = GetFont(); nT.fontSize = 20; nT.fontStyle = FontStyle.Bold;
-        nT.color = Color.white; nT.alignment = TextAnchor.MiddleCenter;
-        var nRT = nGO.GetComponent<RectTransform>();
-        nRT.anchorMin = new Vector2(0f, 0.45f); nRT.anchorMax = new Vector2(1f, 1f);
-        nRT.offsetMin = new Vector2(4, 0); nRT.offsetMax = new Vector2(-4, -4);
-
-        var dGO = new GameObject("D"); dGO.transform.SetParent(go.transform, false);
-        var dT  = dGO.AddComponent<Text>();
-        dT.text = desc; dT.font = GetFont(); dT.fontSize = 14;
-        dT.color = new Color(0.85f, 0.78f, 1f, 1f); dT.alignment = TextAnchor.MiddleCenter;
-        var dRT = dGO.GetComponent<RectTransform>();
-        dRT.anchorMin = new Vector2(0f, 0f); dRT.anchorMax = new Vector2(1f, 0.5f);
-        dRT.offsetMin = new Vector2(4, 2); dRT.offsetMax = new Vector2(-4, 0);
-
-        return btn;
+        return VRUIFactory.CreateTwoLineButton(parent, "CBtn_" + label, label, desc,
+            new Vector2(x, y), new Vector2(w, h), btnColor, onClick: null);
     }
 
     void OnColorToggle() {
@@ -814,25 +715,5 @@ public class RepresentationSwitcherUI : MonoBehaviour {
     void ApplyHydrophobicityColoring()  => ColorAllReps((sel, t) => APIPython.colorByHydrophobicity(sel, t));
     void ApplyRainbowColoring()         => ColorAllReps((sel, t) => APIPython.colorByResnum(sel, t));
 
-    // ── Helpers ───────────────────────────────────────────────────────────
-
-    static void AddImage(Transform parent, string name, Color color,
-        Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax) {
-        GameObject go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        Image img = go.AddComponent<Image>();
-        img.color = color;
-        RectTransform rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = anchorMin;
-        rt.anchorMax = anchorMax;
-        rt.offsetMin = offsetMin;
-        rt.offsetMax = offsetMax;
-    }
-
-    static Font GetFont() {
-        Font f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        return f;
-    }
 }
 }
