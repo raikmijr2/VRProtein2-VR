@@ -124,7 +124,7 @@ public class SequenceSelectorUI : MonoBehaviour {
         SeqClearHighlight();
         var selMgr = UnityMolMain.getSelectionManager();
         if (selMgr.currentSelection != null && selMgr.currentSelection.isAlterable) {
-            APIPython.select("none", selMgr.currentSelection.name,
+            APIPython.select("nothing", selMgr.currentSelection.name,
                              createSelection: true, addToExisting: false, silent: true);
         }
         SetStatus("Selección limpiada.", Color.white);
