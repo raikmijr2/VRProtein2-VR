@@ -13,16 +13,9 @@ public static class MorphGenerator {
     public static bool Generate(UnityMolStructure s, int steps = DEFAULT_STEPS) {
         if (s == null || steps < 2) return false;
 
-        Debug.Log($"[Morph] struct='{s.name}' trajectoryLoaded={s.trajectoryLoaded} " +
-                  $"xdr={(s.xdr != null ? $"OK frames={s.xdr.NumberFrames}" : "null")} " +
-                  $"trajectoryMode={s.trajectoryMode} " +
-                  $"modelFrames={(s.modelFrames != null ? s.modelFrames.Count.ToString() : "null")} " +
-                  $"models={s.models?.Count}");
-
         Vector3[] first, last;
 
         if (s.trajectoryLoaded && s.xdr != null && s.xdr.NumberFrames >= 2) {
-            Debug.Log("[Morph] Rama XDR");
             int atomCount = s.currentModel.allAtoms.Count;
 
             s.trajSetFrame(0);
@@ -35,15 +28,12 @@ public static class MorphGenerator {
             for (int i = 0; i < atomCount; i++)
                 last[i] = s.currentModel.allAtoms[i].position;
 
-            Debug.Log($"[Morph] frame0[0]={first[0]}  frameN[0]={last[0]}");
             s.trajSetFrame(0);
 
         } else if (s.trajectoryMode && s.modelFrames != null && s.modelFrames.Count >= 2) {
-            Debug.Log("[Morph] Rama modelFrames");
             first = s.modelFrames[0];
             last  = s.modelFrames[s.modelFrames.Count - 1];
         } else if (s.models != null && s.models.Count >= 2) {
-            Debug.Log("[Morph] Rama models PDB");
             var fa = s.models[0].allAtoms;
             var la = s.models[s.models.Count - 1].allAtoms;
             int atomCount = Mathf.Min(fa.Count, la.Count);
@@ -71,7 +61,6 @@ public static class MorphGenerator {
         s.modelFrames    = frames;
         s.trajectoryMode = true;
         s.currentFrameId = 0;
-        Debug.Log($"[Morph] Generados {steps} frames. Generate OK.");
         return true;
     }
 }
