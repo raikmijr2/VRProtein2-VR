@@ -131,21 +131,12 @@ public class SequenceSelectorUI : MonoBehaviour {
     }
 
     void SeqApplyHighlight(List<UnityMolAtom> atoms) {
-        var repManager = UnityMolMain.getRepresentationManager();
-        if (repManager == null) return;
-        Color32 yellow = new Color32(255, 217, 0, 255);
+        if (!HighlightService.ApplyHighlight(atoms)) return;
         foreach (var a in atoms) seqHighlightedAtoms.Add(a);
-        foreach (var rep in repManager.representations)
-            rep.SetColors(atoms, yellow);
     }
 
     void SeqRefreshHighlight() {
-        var repManager = UnityMolMain.getRepresentationManager();
-        if (repManager == null) return;
-        Color32 yellow = new Color32(255, 217, 0, 255);
-        var atomList = new List<UnityMolAtom>(seqHighlightedAtoms);
-        foreach (var rep in repManager.representations)
-            rep.SetColors(atomList, yellow);
+        HighlightService.ApplyHighlight(new List<UnityMolAtom>(seqHighlightedAtoms));
     }
 
     void SeqClearHighlight() {

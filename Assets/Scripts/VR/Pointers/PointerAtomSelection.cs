@@ -180,15 +180,10 @@ public class PointerAtomSelection : MonoBehaviour {
 
     void AddHighlight(UnityMolSelection sel) {
         if (sel == null || sel.Count == 0) return;
-        var repManager = UnityMolMain.getRepresentationManager();
-        if (repManager == null) return;
-
-        Color32 yellow = new Color32(255, 217, 0, 255);
+        // SetColors (plural) usa TryGetValue internamente → salta átomos que no pertenecen a esa rep
+        if (!HighlightService.ApplyHighlight(sel.atoms)) return;
         foreach (var a in sel.atoms)
             highlightedAtoms.Add(a);
-        // SetColors (plural) usa TryGetValue internamente → salta átomos que no pertenecen a esa rep
-        foreach (var rep in repManager.representations)
-            rep.SetColors(sel.atoms, yellow);
     }
 
     void RemoveHighlight(UnityMolSelection sel) {

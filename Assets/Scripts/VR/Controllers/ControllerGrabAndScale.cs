@@ -155,8 +155,7 @@ public partial class ControllerGrabAndScale : MonoBehaviour {
             var sel = selMgr.currentSelection;
             if (sel != null && sel.Count > 0) {
                 // Pausar cualquier animación activa para evitar que sobreescriba las posiciones
-                foreach (var ui in FindObjectsOfType<TrajAnimationUI>())  ui.Pause();
-                foreach (var ui in FindObjectsOfType<AnimationPlayerUI>()) ui.Pause();
+                PlaybackRegistry.PauseAll();
                 isGrabbingSelection = true;
                 isClicking = true;
                 grabbedSelection = sel;
