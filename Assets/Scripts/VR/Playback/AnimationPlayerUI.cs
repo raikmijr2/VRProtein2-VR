@@ -54,6 +54,7 @@ public partial class AnimationPlayerUI : MonoBehaviour {
 
     bool  manualPlay  = false;
     float manualTimer = 0f;
+    float morphPlayheadFrame = 0f;
 
     Button morphBtn;
     Image  morphBtnImg;
@@ -121,7 +122,34 @@ public partial class AnimationPlayerUI : MonoBehaviour {
             return;
         }
 
-        if (manualPlay && (_morphActive || anim.trajPlayer == null || !anim.trajPlayer.play)) {
+        if (_morphActive) {
+            // Morph frames advance via s.setModel(), which always does a full
+            // representation rebuild (expensive, especially right after a
+            // RÍGIDO/FÍSICO morph). Stepping ±1 frame per interval like the
+            // branch below would, when a single setModel() call takes longer
+            // than the interval, make Update() fall further and further
+            // behind in real time while still reporting the requested speed -
+            // it looks "stuck at 1 fps" no matter what speed says. Instead,
+            // jump straight to the frame that should be showing right now
+            // (computed from elapsed time), so at most one setModel() call
+            // happens per Update() and playback position stays honest even
+            // when the achievable visual rate is lower than requested.
+            if (manualPlay && anim.modelFrames != null && anim.modelFrames.Count > 0) {
+                int totalFrames = anim.modelFrames.Count;
+                morphPlayheadFrame += Time.deltaTime * speed;
+                int targetFrame;
+                if (looping) {
+                    float wrapped = morphPlayheadFrame % totalFrames;
+                    if (wrapped < 0) wrapped += totalFrames;
+                    targetFrame = Mathf.FloorToInt(wrapped);
+                } else {
+                    targetFrame = Mathf.Min(Mathf.FloorToInt(morphPlayheadFrame), totalFrames - 1);
+                }
+                if (targetFrame != anim.currentFrameId) anim.setModel(targetFrame);
+            } else {
+                morphPlayheadFrame = anim.currentFrameId; // stay in sync while paused/stepped manually
+            }
+        } else if (manualPlay && (anim.trajPlayer == null || !anim.trajPlayer.play)) {
             manualTimer += Time.deltaTime;
             float interval = 1f / Mathf.Max(0.1f, speed);
             if (manualTimer >= interval) { manualTimer = 0f; StepFrame(anim, true); }

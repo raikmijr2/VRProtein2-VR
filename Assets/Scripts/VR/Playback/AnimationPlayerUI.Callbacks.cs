@@ -113,6 +113,7 @@ public partial class AnimationPlayerUI {
         _morphActive = true;
         manualPlay   = true;
         manualTimer  = 0f;
+        morphPlayheadFrame = 0f;
     }
 
     string SpeedText() => speed < 1f ? $"{speed:F2} fps" : $"{speed:F0} fps";
