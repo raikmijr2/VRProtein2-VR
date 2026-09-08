@@ -65,18 +65,17 @@ public class PointerMeasurements : MonoBehaviour {
     AudioSource source;
 
     ViveRoleProperty curRole;
+    readonly ControllerInputBinder inputBinder = new ControllerInputBinder();
 
     void OnEnable() {
         curRole = GetComponent<ViveRoleSetter>().viveRole;
 
         if (curRole != null) {
-            ViveInput.AddPressDown((HandRole)curRole.roleValue, ControllerButton.Menu, buttonPressed);
+            inputBinder.Bind((HandRole)curRole.roleValue, ControllerButton.Menu, buttonPressed);
         }
     }
     void OnDisable() {
-        if (curRole != null) {
-            ViveInput.RemovePressDown((HandRole)curRole.roleValue, ControllerButton.Menu, buttonPressed);
-        }
+        inputBinder.UnbindAll();
     }
 
     void Start() {

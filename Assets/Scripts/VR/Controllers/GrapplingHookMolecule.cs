@@ -52,7 +52,7 @@ public class GrapplingHookMolecule : MonoBehaviour {
     protected bool isChanging;
 
     ViveRoleProperty curRole;
-
+    readonly ControllerInputBinder inputBinder = new ControllerInputBinder();
 
     void OnEnable() {
 
@@ -62,9 +62,12 @@ public class GrapplingHookMolecule : MonoBehaviour {
         isChanging = false;
 
         if (curRole != null) {
-            ViveInput.AddPressDown((HandRole)curRole.roleValue, ControllerButton.PadTouch, TouchpadTouchStart);
-            ViveInput.AddPressUp((HandRole)curRole.roleValue, ControllerButton.PadTouch, TouchpadTouchEnd);
+            inputBinder.Bind((HandRole)curRole.roleValue, ControllerButton.PadTouch, TouchpadTouchStart, TouchpadTouchEnd);
         }
+    }
+
+    void OnDisable() {
+        inputBinder.UnbindAll();
     }
 
     void Update() {

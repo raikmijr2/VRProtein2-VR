@@ -64,6 +64,7 @@ public class PointerAtomSelection : MonoBehaviour {
     GameObject selSphere;
     float curSelRad;
     ViveRoleProperty curRole;
+    readonly ControllerInputBinder inputBinder = new ControllerInputBinder();
 
     void OnEnable() {
 
@@ -74,7 +75,7 @@ public class PointerAtomSelection : MonoBehaviour {
         selM = UnityMolMain.getSelectionManager();
 
         selSphere = GameObject.Instantiate((GameObject) Resources.Load("Prefabs/SelectionSphere"));
-        
+
         DontDestroyOnLoad(selSphere);
         selSphere.SetActive(false);
 
@@ -82,10 +83,8 @@ public class PointerAtomSelection : MonoBehaviour {
 
         if (curRole != null) {
             HandRole h = (HandRole)curRole.roleValue;
-            ViveInput.AddPressDown(h, ControllerButton.Pad,  padClicked);
-            ViveInput.AddPressUp  (h, ControllerButton.Pad,  buttonReleased);
-            ViveInput.AddPressDown(h, ControllerButton.AKey, padClicked);
-            ViveInput.AddPressUp  (h, ControllerButton.AKey, buttonReleased);
+            inputBinder.Bind(h, ControllerButton.Pad,  padClicked, buttonReleased);
+            inputBinder.Bind(h, ControllerButton.AKey, padClicked, buttonReleased);
         }
 
         isPressed = false;
@@ -94,13 +93,7 @@ public class PointerAtomSelection : MonoBehaviour {
 
 
     void OnDisable() {
-        if (curRole != null) {
-            HandRole h = (HandRole)curRole.roleValue;
-            ViveInput.RemovePressDown(h, ControllerButton.Pad,  padClicked);
-            ViveInput.RemovePressUp  (h, ControllerButton.Pad,  buttonReleased);
-            ViveInput.RemovePressDown(h, ControllerButton.AKey, padClicked);
-            ViveInput.RemovePressUp  (h, ControllerButton.AKey, buttonReleased);
-        }
+        inputBinder.UnbindAll();
     }
 
     void padClicked() { doSelection(); }

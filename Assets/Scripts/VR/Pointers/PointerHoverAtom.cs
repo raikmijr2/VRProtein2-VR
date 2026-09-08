@@ -61,6 +61,7 @@ public class PointerHoverAtom : MonoBehaviour {
     ViveRaycaster pointerCaster;  // mismo transform que el rayo visual
 
     ViveRoleProperty curRole;
+    readonly ControllerInputBinder inputBinder = new ControllerInputBinder();
 
     PointerAtomSelection pas;
     GameObject goAtom;
@@ -76,20 +77,12 @@ public class PointerHoverAtom : MonoBehaviour {
         pas = GetComponent<PointerAtomSelection>();
         if (curRole != null) {
             HandRole h = (HandRole)curRole.roleValue;
-            ViveInput.AddPressDown(h, ControllerButton.PadTouch,  buttonPressed);
-            ViveInput.AddPressUp  (h, ControllerButton.PadTouch,  buttonReleased);
-            ViveInput.AddPressDown(h, ControllerButton.AKeyTouch, buttonPressed);
-            ViveInput.AddPressUp  (h, ControllerButton.AKeyTouch, buttonReleased);
+            inputBinder.Bind(h, ControllerButton.PadTouch,  buttonPressed, buttonReleased);
+            inputBinder.Bind(h, ControllerButton.AKeyTouch, buttonPressed, buttonReleased);
         }
     }
     void OnDisable() {
-        if (curRole != null) {
-            HandRole h = (HandRole)curRole.roleValue;
-            ViveInput.RemovePressDown(h, ControllerButton.PadTouch,  buttonPressed);
-            ViveInput.RemovePressUp  (h, ControllerButton.PadTouch,  buttonReleased);
-            ViveInput.RemovePressDown(h, ControllerButton.AKeyTouch, buttonPressed);
-            ViveInput.RemovePressUp  (h, ControllerButton.AKeyTouch, buttonReleased);
-        }
+        inputBinder.UnbindAll();
     }
 
     void Start() {

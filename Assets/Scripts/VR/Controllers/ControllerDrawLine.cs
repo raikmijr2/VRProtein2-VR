@@ -59,6 +59,7 @@ public class ControllerDrawLine : MonoBehaviour {
     List<Material> materials = new List<Material>();
 
     ViveRoleProperty curRole;
+    readonly ControllerInputBinder inputBinder = new ControllerInputBinder();
 
     void Start() {
         selM = UnityMolMain.getSelectionManager();
@@ -70,16 +71,12 @@ public class ControllerDrawLine : MonoBehaviour {
     void OnEnable() {
         curRole = GetComponent<ViveRoleSetter>().viveRole;
         if (curRole != null) {
-            ViveInput.AddPressDown((HandRole)curRole.roleValue, ControllerButton.Trigger, triggerClicked);
-            ViveInput.AddPressUp((HandRole)curRole.roleValue, ControllerButton.Trigger, triggerReleased);
+            inputBinder.Bind((HandRole)curRole.roleValue, ControllerButton.Trigger, triggerClicked, triggerReleased);
         }
     }
 
     void OnDisable() {
-        if (curRole != null) {
-            ViveInput.RemovePressDown((HandRole)curRole.roleValue, ControllerButton.Trigger, triggerClicked);
-            ViveInput.RemovePressUp((HandRole)curRole.roleValue, ControllerButton.Trigger, triggerReleased);
-        }
+        inputBinder.UnbindAll();
     }
 
 

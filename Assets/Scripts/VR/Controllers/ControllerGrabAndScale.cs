@@ -89,6 +89,7 @@ public partial class ControllerGrabAndScale : MonoBehaviour {
     Vector3 prevControllerPos;
 
     public ViveRoleProperty curRole;
+    readonly ControllerInputBinder inputBinder = new ControllerInputBinder();
 
     public bool grabbedUI {
         get {
@@ -136,31 +137,15 @@ public partial class ControllerGrabAndScale : MonoBehaviour {
         // curRole = ViveRoleProperty.New(GetComponent<ViveRoleSetter>().viveRole);
 
         if (curRole != null) {
-            ViveInput.AddPressDown((HandRole)curRole.roleValue, ControllerButton.Trigger, triggerClicked);
-            ViveInput.AddPressUp((HandRole)curRole.roleValue, ControllerButton.Trigger, triggerReleased);
-
-            ViveInput.AddPressDown((HandRole)curRole.roleValue, ControllerButton.Grip, gridPressed);
-            ViveInput.AddPressUp((HandRole)curRole.roleValue, ControllerButton.Grip, triggerReleased);
-
-
-            ViveInput.AddPressDown((HandRole)curRole.roleValue, ControllerButton.Menu, menuPressed);
-            ViveInput.AddPressUp((HandRole)curRole.roleValue, ControllerButton.Menu, menuReleased);
+            HandRole h = (HandRole)curRole.roleValue;
+            inputBinder.Bind(h, ControllerButton.Trigger, triggerClicked, triggerReleased);
+            inputBinder.Bind(h, ControllerButton.Grip, gridPressed, triggerReleased);
+            inputBinder.Bind(h, ControllerButton.Menu, menuPressed, menuReleased);
         }
     }
 
     void OnDisable() {
-
-        if (curRole != null) {
-
-            ViveInput.RemovePressDown((HandRole)curRole.roleValue, ControllerButton.Trigger, triggerClicked);
-            ViveInput.RemovePressUp((HandRole)curRole.roleValue, ControllerButton.Trigger, triggerReleased);
-
-            ViveInput.RemovePressDown((HandRole)curRole.roleValue, ControllerButton.Grip, gridPressed);
-            ViveInput.RemovePressUp((HandRole)curRole.roleValue, ControllerButton.Grip, triggerReleased);
-
-            ViveInput.RemovePressDown((HandRole)curRole.roleValue, ControllerButton.Menu, menuPressed);
-            ViveInput.RemovePressUp((HandRole)curRole.roleValue, ControllerButton.Menu, menuReleased);
-        }
+        inputBinder.UnbindAll();
     }
 
     private void triggerClicked() {
