@@ -106,6 +106,7 @@ public class PointerAtomSelection : MonoBehaviour {
         // que un raycast puntual porque el controller se mueve al presionar
         var hoverScript = GetComponent<PointerHoverAtom>();
         UnityMolAtom a = hoverScript != null ? hoverScript.lastPointedAtom : null;
+        Debug.Log($"[DIAG-sel] doSelection start | fromHover={(a != null)} | hoverScript.pressedNow via lastPointedAtom={a?.ToString() ?? "null"}");
 
         if (a == null) {
             // Fallback: raycast usando el mismo rayo que el rayo visual (ViveRaycaster)
@@ -120,12 +121,14 @@ public class PointerAtomSelection : MonoBehaviour {
             Vector3 p = Vector3.zero;
             bool isExtrAtom = false;
             a = raycaster.customRaycastAtomBurst(rayOrig, rayDir, ref p, ref isExtrAtom, true);
+            Debug.Log($"[DIAG-sel] fallback raycast result: {(a != null ? a.ToString() : "MISS (no atom found)")}");
         }
 
         RigidPose cpose = VivePose.GetPose(curRole);
 
         if (a == null) {
             // Click en vacío → limpiar toda la selección
+            Debug.Log("[DIAG-sel] a == null after hover+raycast -> treating as empty click, CLEARING selection");
             if (selM.currentSelection != null && selM.currentSelection.isAlterable) {
                 API.APIPython.select("none", selM.currentSelection.name, true,
                                      addToExisting: false, silent: true);
@@ -160,16 +163,19 @@ public class PointerAtomSelection : MonoBehaviour {
             selM.getClickSelection();
 
         UnityMolSelection curSel = selM.currentSelection;
+        Debug.Log($"[DIAG-sel] atom={a} | curSel='{curSel.name}' atoms.Count(before)={curSel.atoms.Count} | contains clicked atom={curSel.atoms.Contains(a)}");
 
         if (curSel.atoms.Contains(a)) {
             // Toggle off: quitar este átomo/residuo/chain de la selección
             API.APIPython.removeFromSelection(hoveredSelection.MDASelString, curSel.name, silent: true);
             RemoveHighlight(hoveredSelection);
+            Debug.Log($"[DIAG-sel] TOGGLE OFF -> curSel.atoms.Count(after)={selM.currentSelection?.atoms.Count}");
         } else {
             // Siempre aditivo: añadir a la selección existente
             API.APIPython.select(hoveredSelection.MDASelString, curSel.name, true,
                                  addToExisting: true, silent: true);
             AddHighlight(hoveredSelection);
+            Debug.Log($"[DIAG-sel] TOGGLE ON -> curSel.atoms.Count(after)={selM.currentSelection?.atoms.Count} | curSel is same ref as before={ReferenceEquals(curSel, selM.currentSelection)}");
         }
     }
 
@@ -179,9 +185,15 @@ public class PointerAtomSelection : MonoBehaviour {
     }
 
     void AddHighlight(UnityMolSelection sel) {
-        if (sel == null || sel.Count == 0) return;
+        if (sel == null || sel.Count == 0) {
+            Debug.Log($"[DIAG-sel] AddHighlight EARLY RETURN | sel==null={sel == null} | sel.Count={sel?.Count}");
+            return;
+        }
         var repManager = UnityMolMain.getRepresentationManager();
-        if (repManager == null) return;
+        if (repManager == null) {
+            Debug.Log("[DIAG-sel] AddHighlight EARLY RETURN | repManager == null");
+            return;
+        }
 
         Color32 yellow = new Color32(255, 217, 0, 255);
         foreach (var a in sel.atoms)
@@ -189,6 +201,7 @@ public class PointerAtomSelection : MonoBehaviour {
         // SetColors (plural) usa TryGetValue internamente → salta átomos que no pertenecen a esa rep
         foreach (var rep in repManager.representations)
             rep.SetColors(sel.atoms, yellow);
+        Debug.Log($"[DIAG-sel] AddHighlight applied to {sel.Count} atom(s) across {repManager.representations.Count} representation(s) | highlightedAtoms.Count(total)={highlightedAtoms.Count}");
     }
 
     void RemoveHighlight(UnityMolSelection sel) {

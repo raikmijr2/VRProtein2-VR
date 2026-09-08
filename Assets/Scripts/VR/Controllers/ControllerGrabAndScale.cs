@@ -151,6 +151,7 @@ public partial class ControllerGrabAndScale : MonoBehaviour {
     private void triggerClicked() {
 
         // Selection grab: if there's an active selection, drag its atoms instead of scaling
+        Debug.Log($"[DIAG-grab] triggerClicked | selMgr!=null={selMgr != null} | grabbedUI={grabbedUI} | isGroupGrabbed={isGroupGrabbed} | currentSelection.Count={selMgr?.currentSelection?.Count}");
         if (selMgr != null && !grabbedUI && !isGroupGrabbed) {
             var sel = selMgr.currentSelection;
             if (sel != null && sel.Count > 0) {
@@ -162,6 +163,7 @@ public partial class ControllerGrabAndScale : MonoBehaviour {
                 grabbedSelection = sel;
                 grabbedSelStructure = sel.atoms[0].residue.chain.model.structure;
                 prevControllerPos = transform.position;
+                Debug.Log($"[DIAG-grab] ENTERED selection-grab mode | grabbedSelection.Count={grabbedSelection.Count} | grabbedSelStructure={grabbedSelStructure?.name} | annotationParent!=null={grabbedSelStructure?.annotationParent != null}");
                 return;
             }
         }
@@ -512,6 +514,11 @@ public partial class ControllerGrabAndScale : MonoBehaviour {
         }
 
         // Selection drag: apply controller delta to atom.position of all selected atoms
+        if (isGrabbingSelection) {
+            if (grabbedSelection == null || grabbedSelStructure == null || grabbedSelStructure.annotationParent == null) {
+                Debug.Log($"[DIAG-grab] Update: isGrabbingSelection=true but blocked | grabbedSelection==null={grabbedSelection == null} | grabbedSelStructure==null={grabbedSelStructure == null} | annotationParent==null={grabbedSelStructure?.annotationParent == null}");
+            }
+        }
         if (isGrabbingSelection && grabbedSelection != null && grabbedSelStructure != null
                 && grabbedSelStructure.annotationParent != null) {
             Vector3 deltaWorld = transform.position - prevControllerPos;
