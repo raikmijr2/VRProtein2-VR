@@ -62,6 +62,7 @@ public class PointerIMD : MonoBehaviour {
     GameObject arrow;
 
     ViveRoleProperty curRole;
+    readonly ControllerInputBinder inputBinder = new ControllerInputBinder();
 
 
     void OnEnable() {
@@ -81,16 +82,17 @@ public class PointerIMD : MonoBehaviour {
         }
 
         if (curRole != null) {
-            ViveInput.AddPressDown((HandRole)curRole.roleValue, ControllerButton.Pad, buttonPressed);
-            ViveInput.AddPressUp((HandRole)curRole.roleValue, ControllerButton.Pad, buttonReleased);
+            // BUG FIX: this used to register PressUp on Pad but unregister it on PadTouch (a
+            // different button) in OnDisable, so the handler was never actually removed - a
+            // listener leak that re-subscribed buttonReleased every enable/disable cycle.
+            // ControllerInputBinder replays exactly what was bound, making that class of bug
+            // impossible.
+            inputBinder.Bind((HandRole)curRole.roleValue, ControllerButton.Pad, buttonPressed, buttonReleased);
         }
     }
 
     void OnDisable() {
-        if (curRole != null) {
-            ViveInput.RemovePressDown((HandRole)curRole.roleValue, ControllerButton.Pad, buttonPressed);
-            ViveInput.RemovePressUp((HandRole)curRole.roleValue, ControllerButton.PadTouch, buttonReleased);
-        }
+        inputBinder.UnbindAll();
 
         curSel = null;
 
@@ -146,7 +148,13 @@ public class PointerIMD : MonoBehaviour {
             }
             UnityMolStructure s = imdSelection.structures[0];
             UnityMolStructureManager sm = UnityMolMain.getStructureManager();
-            Transform molParent = sm.structureToGameObject[s.name].transform;
+            // BUG FIX: raw dictionary indexer threw KeyNotFoundException if the structure's
+            // GameObject wasn't registered yet (possible mid-load race).
+            if (!sm.structureToGameObject.TryGetValue(s.name, out GameObject molGO)) {
+                curSel = null;
+                return;
+            }
+            Transform molParent = molGO.transform;
             atomT = UnityMolMain.getAnnotationManager().getGO(clickedAtom).transform;
 
             curSel = imdSelection;
@@ -167,7 +175,13 @@ public class PointerIMD : MonoBehaviour {
 
             UnityMolStructure s = curSel.structures[0];
             UnityMolStructureManager sm = UnityMolMain.getStructureManager();
-            Transform molParent = sm.structureToGameObject[s.name].transform;
+            // BUG FIX: same raw-indexer KeyNotFoundException risk as buttonPressed() above.
+            if (!sm.structureToGameObject.TryGetValue(s.name, out GameObject molGO)) {
+                curSel = null;
+                if (hoveringScript != null) hoveringScript.pauseHovering = false;
+                return;
+            }
+            Transform molParent = molGO.transform;
 
             Vector3 curPos = molParent.InverseTransformPoint(transform.position);
             Vector3 curPosA = molParent.InverseTransformPoint(atomT.position);
