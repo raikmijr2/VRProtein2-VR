@@ -67,11 +67,11 @@ public class PointerMoveUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public float depthScrollSpeed = 1.5f;
 
     void Awake() {
-        try {
-            cgsL = GameObject.Find("LeftHand").GetComponent<ControllerGrabAndScale>();
-            cgsR = GameObject.Find("RightHand").GetComponent<ControllerGrabAndScale>();
-        }
-        catch {}
+        GameObject leftGO = UnityMolMain.getLeftController();
+        if (leftGO != null) cgsL = leftGO.GetComponent<ControllerGrabAndScale>();
+
+        GameObject rightGO = UnityMolMain.getRightController();
+        if (rightGO != null) cgsR = rightGO.GetComponent<ControllerGrabAndScale>();
     }
 
     void Update()
