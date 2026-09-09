@@ -148,6 +148,11 @@ public class SequenceSelectorUI : MonoBehaviour {
         seqHighlightedAtoms.Clear();
     }
 
+    /// <summary>Public entry point so other panels (e.g. RepresentationSwitcherUI's Reiniciar) can clear this panel's own yellow highlight tracking too.</summary>
+    public void ResetHighlights() {
+        SeqClearHighlight();
+    }
+
     void SetStatus(string msg, Color col) {
         if (statusText) { statusText.text = msg; statusText.color = col; }
         Debug.Log("[SeqSelector] " + msg);

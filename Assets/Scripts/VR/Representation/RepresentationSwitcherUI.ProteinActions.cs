@@ -36,9 +36,17 @@ public partial class RepresentationSwitcherUI {
         }
 
         // 4. Limpiar highlights amarillos de los selectores
+        // BUG FIX: solo limpiaba PointerAtomSelection (clic directo en átomos), pero
+        // SequenceSelectorUI lleva su propio registro de átomos resaltados
+        // (seqHighlightedAtoms) que nunca se tocaba — si habías seleccionado un rango
+        // por secuencia, esos átomos se quedaban amarillos tras reiniciar.
         var selectors = FindObjectsOfType<PointerAtomSelection>(true);
         foreach (var sel in selectors)
             sel.ResetHighlights();
+
+        var seqSelectors = FindObjectsOfType<SequenceSelectorUI>(true);
+        foreach (var seqSel in seqSelectors)
+            seqSel.ResetHighlights();
     }
 
     void OnExportPDB() {
