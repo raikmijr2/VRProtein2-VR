@@ -163,6 +163,12 @@ public partial class RepresentationSwitcherUI {
         var selectedSet = new HashSet<UnityMolAtom>(clickSel.atoms);
         var repManager  = UnityMolMain.getRepresentationManager();
 
+        // DIAG-repsel: diagnóstico temporal para investigar corrupción visual al
+        // cambiar de representación con Modo: SELECCIÓN activo (falla ya al primer cambio).
+        Debug.Log("[DIAG-repsel] ApplyRepToSelection repCode=" + repCode +
+                   " clickSel.Count=" + clickSel.Count +
+                   " totalRepsEnCadena=" + repManager.representations.Count);
+
         var snapshot = new List<UnityMolRepresentation>(repManager.representations);
         foreach (var rep in snapshot) {
             // Saltar reps ocultas, la propia rep de la selección y el surface overlay (es independiente)
@@ -182,6 +188,11 @@ public partial class RepresentationSwitcherUI {
 
             if (!hasOverlap) continue;
 
+            Debug.Log("[DIAG-repsel] afecta rep sel='" + rep.selection.name +
+                       "' atomType=" + rep.repType.atomType + " bondType=" + rep.repType.bondType +
+                       " repAtoms=" + repAtoms.Count + " complement=" + complement.Count +
+                       " -> " + (complement.Count == 0 ? "Hide()" : "updateWithNewSelection()"));
+
             bool wasEnabled = rep.isEnabled;
             modifiedReps.Add((rep, new List<UnityMolAtom>(repAtoms), wasEnabled));
 
@@ -193,6 +204,7 @@ public partial class RepresentationSwitcherUI {
             }
         }
 
+        Debug.Log("[DIAG-repsel] showSelection(" + clickSelName + ", " + repCode + ") x2, clickSel struct count=" + clickSel.structures.Count);
         APIPython.showSelection(clickSelName, repCode);
         // showSelection only calls Show() on existing reps; first call creates via AddRepresentation
         // without Show(). Second call guarantees Show() is invoked on the newly-created rep.
