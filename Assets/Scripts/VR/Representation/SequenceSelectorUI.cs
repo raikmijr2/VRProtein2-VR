@@ -12,28 +12,23 @@ namespace UMol {
 /// Panel VR para seleccionar un rango de residuos por número de secuencia.
 /// Colorea los residuos seleccionados en naranja dentro del Cartoon existente.
 /// Incluye teclado numérico propio, independiente del teclado de UnityMol.
+/// La jerarquía UI (panel + teclado numérico) es un prefab construido en el
+/// Editor (ver SequenceSelectorPanel.prefab); este script solo contiene la
+/// lógica de negocio y las referencias a sus partes.
 /// </summary>
 public class SequenceSelectorUI : MonoBehaviour {
 
-    public Vector3 spawnPosition = new Vector3(-0.5f, 1.4f, 1.2f);
-
-    static readonly Color bg       = new Color(0.06f, 0.10f, 0.08f, 0.95f);
-    static readonly Color btnGreen = new Color(0.10f, 0.55f, 0.25f, 1f);
-    static readonly Color btnRed   = new Color(0.65f, 0.12f, 0.12f, 1f);
-
-    InputField fromInput;
-    InputField toInput;
-    Text       statusText;
-    Text       rangeLabel;
+    [SerializeField] InputField fromInput;
+    [SerializeField] InputField toInput;
+    [SerializeField] Text       statusText;
+    [SerializeField] Text       rangeLabel;
+    [SerializeField] GameObject numKeyboardGO;
 
     int lastStructCount = -1;
     int lastRepCount = -1;
     HashSet<UnityMolAtom> seqHighlightedAtoms = new HashSet<UnityMolAtom>();
 
-    GameObject numKeyboardGO;
     InputField activeInput;
-
-    void Start() => BuildPanel();
 
     void Update() {
         var sm = UnityMolMain.getStructureManager();
@@ -87,7 +82,7 @@ public class SequenceSelectorUI : MonoBehaviour {
         if (toInput   && string.IsNullOrEmpty(toInput.text))   toInput.text   = maxId.ToString();
     }
 
-    void OnSelectClicked() {
+    public void OnSelectClicked() {
         var sm = UnityMolMain.getStructureManager();
         if (sm == null || sm.loadedStructures.Count == 0) {
             SetStatus("No hay proteína cargada.", Color.yellow); return;
@@ -120,7 +115,7 @@ public class SequenceSelectorUI : MonoBehaviour {
         SetStatus($"{result.atoms.Count} átomos seleccionados  |  residuos {fromRes}–{toRes}", Color.green);
     }
 
-    void OnClearClicked() {
+    public void OnClearClicked() {
         SeqClearHighlight();
         var selMgr = UnityMolMain.getSelectionManager();
         if (selMgr.currentSelection != null && selMgr.currentSelection.isAlterable) {
@@ -160,7 +155,7 @@ public class SequenceSelectorUI : MonoBehaviour {
 
     // ── Teclado numérico ─────────────────────────────────────────────────────
 
-    void TypeKey(string k) {
+    public void TypeKey(string k) {
         if (activeInput == null) return;
         if (k == "Back") {
             if (activeInput.text.Length > 0)
@@ -173,106 +168,5 @@ public class SequenceSelectorUI : MonoBehaviour {
             activeInput.text += k;
         }
     }
-
-    void BuildNumericKeyboard(Transform canvasParent, float panelW) {
-        const float btnS = 66f, pad = 8f;
-        const float kW = 3 * btnS + 4 * pad;
-        const float kH = 4 * btnS + 5 * pad;
-
-        numKeyboardGO = new GameObject("SeqNumKeyboard");
-        numKeyboardGO.AddComponent<Canvas>();
-        numKeyboardGO.AddComponent<CanvasScaler>().dynamicPixelsPerUnit = 10f;
-        numKeyboardGO.AddComponent<GraphicRaycaster>();
-        numKeyboardGO.AddComponent<CanvasRaycastTarget>();
-
-        var rt = (RectTransform)numKeyboardGO.transform;
-        rt.SetParent(canvasParent, false);
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.pivot     = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta = new Vector2(kW, kH);
-        rt.anchoredPosition = new Vector2(panelW / 2f + 20f + kW / 2f, 0f);
-
-        VRUIFactory.CreateBackgroundImage(numKeyboardGO.transform, bg);
-
-        string[][] rows = {
-            new[] { "7", "8", "9" },
-            new[] { "4", "5", "6" },
-            new[] { "1", "2", "3" },
-            new[] { "←", "0", "OK" },
-        };
-        var cNum = new Color(0.15f, 0.28f, 0.18f, 1f);
-        var cDel = new Color(0.50f, 0.20f, 0.10f, 1f);
-
-        for (int r = 0; r < rows.Length; r++) {
-            for (int c = 0; c < rows[r].Length; c++) {
-                string key = rows[r][c];
-                float x = -kW / 2f + pad + c * (btnS + pad) + btnS / 2f;
-                float y =  kH / 2f - pad - r * (btnS + pad) - btnS / 2f;
-                Color col = key == "OK" ? btnGreen : key == "←" ? cDel : cNum;
-                string k  = key == "←" ? "Back" : key;
-                int keyFontSize = key.Length > 1 ? 18 : 26;
-                var btn = VRUIFactory.CreateButton(numKeyboardGO.transform, key, new Vector2(btnS, btnS), new Vector2(x, y), col,
-                    fontSize: keyFontSize, highlightBlend: 0.30f);
-                var capturedK = k;
-                btn.onClick.AddListener(() => TypeKey(capturedK));
-            }
-        }
-
-        numKeyboardGO.SetActive(false);
-    }
-
-    // ── Panel ─────────────────────────────────────────────────────────────────
-
-    void BuildPanel() {
-        const float W = 420f, pad = 12f;
-        const float titleH = 50f, rangeLH = 26f, labelH = 20f;
-        const float inputH = 42f, btnH = 50f, statusH = 44f;
-        float H = pad + titleH + pad + rangeLH + pad
-                + labelH + 6f + inputH + pad
-                + labelH + 6f + inputH + pad
-                + btnH + pad + statusH + pad;
-
-        var go = VRUIFactory.CreateWorldSpaceCanvas("SequenceSelectorPanel", spawnPosition, new Vector2(W, H));
-
-        VRUIFactory.CreateBackgroundImage(go.transform, bg);
-        float y = H / 2f - pad;
-
-        VRUIFactory.CreateCenteredLabel(go.transform, "SELECCIÓN SECUENCIA", W, 24 + 6, 24, new Vector2(0, y - titleH / 2f), FontStyle.Bold);
-        y -= titleH + pad;
-
-        VRUIFactory.CreateSeparator(go.transform, new Vector2(0, y + rangeLH / 2f), 380f);
-        rangeLabel = VRUIFactory.CreateCenteredLabel(go.transform, "Sin proteína cargada", W - pad * 2, rangeLH, 14, new Vector2(0, y - rangeLH / 2f));
-        rangeLabel.color = new Color(0.7f, 0.9f, 0.7f, 1f);
-        y -= rangeLH + pad;
-
-        VRUIFactory.CreateCenteredLabel(go.transform, "Desde residuo:", W, 16 + 6, 16, new Vector2(0, y - labelH / 2f));
-        y -= labelH + 6f;
-        fromInput = VRUIFactory.CreateInputField(go.transform, W - pad * 2, inputH, new Vector2(0, y - inputH / 2f), "", "1",
-            new Color(0.12f, 0.18f, 0.14f, 1f), new Color(0.5f, 0.7f, 0.5f, 0.8f), 22, InputField.ContentType.IntegerNumber);
-        y -= inputH + pad;
-
-        VRUIFactory.CreateCenteredLabel(go.transform, "Hasta residuo:", W, 16 + 6, 16, new Vector2(0, y - labelH / 2f));
-        y -= labelH + 6f;
-        toInput = VRUIFactory.CreateInputField(go.transform, W - pad * 2, inputH, new Vector2(0, y - inputH / 2f), "", "166",
-            new Color(0.12f, 0.18f, 0.14f, 1f), new Color(0.5f, 0.7f, 0.5f, 0.8f), 22, InputField.ContentType.IntegerNumber);
-        y -= inputH + pad;
-
-        float halfW = (W - pad * 3f) / 2f;
-        var selBtn = VRUIFactory.CreateButton(go.transform, "SELECCIONAR",
-            new Vector2(halfW, btnH), new Vector2(-halfW / 2f - pad / 2f, y - btnH / 2f), btnGreen, fontSize: 18);
-        selBtn.onClick.AddListener(OnSelectClicked);
-        var clrBtn = VRUIFactory.CreateButton(go.transform, "LIMPIAR",
-            new Vector2(halfW, btnH), new Vector2(halfW / 2f + pad / 2f, y - btnH / 2f), btnRed, fontSize: 18);
-        clrBtn.onClick.AddListener(OnClearClicked);
-        y -= btnH + pad;
-
-        statusText = VRUIFactory.CreateCenteredLabel(go.transform, "Elige un rango y pulsa SELECCIONAR.",
-            W - pad * 2, statusH, 13, new Vector2(0, y - statusH / 2f));
-        statusText.horizontalOverflow = HorizontalWrapMode.Wrap;
-        statusText.alignment = TextAnchor.UpperCenter;
-
-        BuildNumericKeyboard(go.transform, W);
-    }
-
 }
 }
