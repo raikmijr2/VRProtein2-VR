@@ -15,7 +15,7 @@ public static class HighlightService {
     public static readonly Color32 HighlightColor = new Color32(255, 217, 0, 255);
 
     /// <summary>Colors the given atoms yellow on every active representation. Returns false (no-op) if there's no representation manager or the list is empty.</summary>
-    public static bool ApplyHighlight(IList<UnityMolAtom> atoms) {
+    public static bool ApplyHighlight(List<UnityMolAtom> atoms) {
         if (atoms == null || atoms.Count == 0) return false;
         var repManager = UnityMolMain.getRepresentationManager();
         if (repManager == null) return false;
