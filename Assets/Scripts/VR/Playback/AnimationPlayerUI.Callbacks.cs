@@ -4,7 +4,7 @@ namespace UMol {
 
 public partial class AnimationPlayerUI {
 
-    void OnPlayPause() {
+    public void OnPlayPause() {
         var sm = UnityMolMain.getStructureManager();
         var target = GetCurrentTarget(sm);
 
@@ -48,7 +48,7 @@ public partial class AnimationPlayerUI {
 
     }
 
-    void OnPrev() {
+    public void OnPrev() {
         var s = GetAnimatedStructure();
         if (s == null) return;
         smoothPlay = false; manualPlay = false;
@@ -57,7 +57,7 @@ public partial class AnimationPlayerUI {
         StepFrame(s, false);
     }
 
-    void OnNext() {
+    public void OnNext() {
         var s = GetAnimatedStructure();
         if (s == null) return;
         smoothPlay = false; manualPlay = false;
@@ -66,8 +66,8 @@ public partial class AnimationPlayerUI {
         StepFrame(s, true);
     }
 
-    void OnSpeedDown() { speedIdx = Mathf.Max(0, speedIdx - 1);                       ApplySpeed(); if (speedLabel) speedLabel.text = SpeedText(); }
-    void OnSpeedUp()   { speedIdx = Mathf.Min(speedSteps.Length - 1, speedIdx + 1);  ApplySpeed(); if (speedLabel) speedLabel.text = SpeedText(); }
+    public void OnSpeedDown() { speedIdx = Mathf.Max(0, speedIdx - 1);                       ApplySpeed(); if (speedLabel) speedLabel.text = SpeedText(); }
+    public void OnSpeedUp()   { speedIdx = Mathf.Min(speedSteps.Length - 1, speedIdx + 1);  ApplySpeed(); if (speedLabel) speedLabel.text = SpeedText(); }
 
     void ApplySpeed() {
         var s = GetAnimatedStructure();
@@ -76,7 +76,7 @@ public partial class AnimationPlayerUI {
         if (s.modelsPlayer != null) s.modelsPlayer.modelFramerate = speed;
     }
 
-    void OnLoopToggle() {
+    public void OnLoopToggle() {
         looping = !looping;
         var s = GetAnimatedStructure();
         if (s?.trajPlayer   != null) s.trajPlayer.looping   = looping;
@@ -87,9 +87,9 @@ public partial class AnimationPlayerUI {
         if (loopBtnLabel) loopBtnLabel.text = looping ? "Loop: ON" : "Loop: OFF";
     }
 
-    void OnMorphClick()         => LaunchMorph(0);
-    void OnMorphQualityClick()  => LaunchMorph(1);
-    void OnMorphPhysicalClick() => LaunchMorph(2);
+    public void OnMorphClick()         => LaunchMorph(0);
+    public void OnMorphQualityClick()  => LaunchMorph(1);
+    public void OnMorphPhysicalClick() => LaunchMorph(2);
 
     void LaunchMorph(int mode) {
         var sm = UnityMolMain.getStructureManager();

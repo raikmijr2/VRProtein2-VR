@@ -6,14 +6,13 @@ namespace UMol {
 
 /// <summary>
 /// VR panel to play back trajectories/model animations and launch morphs for
-/// the selected loaded structure. Split across 4 files: this one (fields,
+/// the selected loaded structure. Split across 3 files: this one (fields,
 /// Start/Update, protein-selection), .Interpolation.cs (playback/frame state
-/// machine), .Callbacks.cs (button handlers), .Panel.cs (UI construction).
+/// machine), .Callbacks.cs (button handlers). The UI hierarchy is an
+/// Editor-built prefab (see AnimationPlayerPanel.prefab); this script only
+/// holds the business logic and references to its parts.
 /// </summary>
 public partial class AnimationPlayerUI : MonoBehaviour {
-
-    [Header("Posición inicial del panel en el mundo")]
-    public Vector3 spawnPosition = new Vector3(0.7f, 1.4f, 1.2f);
 
     static readonly Color bgColor   = new Color(0.06f, 0.06f, 0.10f, 0.95f);
     static readonly Color btnNormal = new Color(0.18f, 0.35f, 0.72f, 1f);
@@ -21,18 +20,31 @@ public partial class AnimationPlayerUI : MonoBehaviour {
     static readonly Color btnOrange = new Color(0.65f, 0.35f, 0.00f, 1f);
     static readonly Color btnGrey   = new Color(0.25f, 0.25f, 0.25f, 1f);
 
-    Text   structLabel;
-    Text   structIndexLabel;
-    Text   frameLabel;
-    Text   speedLabel;
-    Text   playBtnLabel;
-    Text   loopBtnLabel;
-    Image  playBtnImg;
-    Image  loopBtnImg;
-    Button playBtn;
-    Button loopBtn;
-    Button structPrevBtn;
-    Button structNextBtn;
+    [SerializeField] Text   structLabel;
+    [SerializeField] Text   structIndexLabel;
+    [SerializeField] Text   frameLabel;
+    [SerializeField] Text   speedLabel;
+    [SerializeField] Text   playBtnLabel;
+    [SerializeField] Text   loopBtnLabel;
+    [SerializeField] Image  playBtnImg;
+    [SerializeField] Image  loopBtnImg;
+    [SerializeField] Button playBtn;
+    [SerializeField] Button loopBtn;
+    [SerializeField] Button structPrevBtn;
+    [SerializeField] Button structNextBtn;
+
+    // Botones de mantener pulsado para +/- velocidad. HoldButtonHelper.onHold es
+    // una Action de código (no UnityEvent), se cablea en Start().
+    [SerializeField] HoldButtonHelper speedDownHold;
+    [SerializeField] HoldButtonHelper speedUpHold;
+
+    [SerializeField] Button morphBtn;
+    [SerializeField] Image  morphBtnImg;
+    [SerializeField] Text   morphBtnLabel;
+    [SerializeField] Button morphQualityBtn;
+    [SerializeField] Image  morphQualityBtnImg;
+    [SerializeField] Button morphPhysicalBtn;
+    [SerializeField] Image  morphPhysicalBtnImg;
 
     // Escala de velocidades: pasos finos en el rango lento, gruesos en el rápido
     static readonly float[] speedSteps = {
@@ -56,14 +68,6 @@ public partial class AnimationPlayerUI : MonoBehaviour {
     float manualTimer = 0f;
     float morphPlayheadFrame = 0f;
 
-    Button morphBtn;
-    Image  morphBtnImg;
-    Text   morphBtnLabel;
-    Button morphQualityBtn;
-    Image  morphQualityBtnImg;
-    Button morphPhysicalBtn;
-    Image  morphPhysicalBtnImg;
-
     bool _morphActive = false;
 
     int _repSkipCounter = 0;
@@ -75,7 +79,11 @@ public partial class AnimationPlayerUI : MonoBehaviour {
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
-    void Start() => BuildPanel();
+    void Start() {
+        if (speedDownHold) speedDownHold.onHold = OnSpeedDown;
+        if (speedUpHold)   speedUpHold.onHold   = OnSpeedUp;
+        if (speedLabel)    speedLabel.text      = SpeedText();
+    }
 
     void Update() {
         var sm = UnityMolMain.getStructureManager();
@@ -194,14 +202,14 @@ public partial class AnimationPlayerUI : MonoBehaviour {
         return sm.loadedStructures[targetStructIdx];
     }
 
-    void OnStructPrev() {
+    public void OnStructPrev() {
         var sm = UnityMolMain.getStructureManager();
         if (sm == null || sm.loadedStructures.Count == 0) return;
         StopAll();
         targetStructIdx = (targetStructIdx - 1 + sm.loadedStructures.Count) % sm.loadedStructures.Count;
     }
 
-    void OnStructNext() {
+    public void OnStructNext() {
         var sm = UnityMolMain.getStructureManager();
         if (sm == null || sm.loadedStructures.Count == 0) return;
         StopAll();
@@ -221,5 +229,16 @@ public partial class AnimationPlayerUI : MonoBehaviour {
     }
 
     public void Pause() => StopAll();
+
+    static void UpdateButtonColorBlock(Button btn, Color normalColor) {
+        if (btn == null) return;
+        var cb = btn.colors;
+        cb.normalColor      = normalColor;
+        cb.highlightedColor = Color.Lerp(normalColor, Color.white, 0.25f);
+        cb.pressedColor     = Color.Lerp(normalColor, Color.black, 0.30f);
+        cb.selectedColor    = normalColor;
+        cb.fadeDuration     = 0.1f;
+        btn.colors = cb;
+    }
 }
 }
