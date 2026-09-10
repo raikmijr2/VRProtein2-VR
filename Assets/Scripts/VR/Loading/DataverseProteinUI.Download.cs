@@ -10,7 +10,7 @@ namespace UMol {
 
 public partial class DataverseProteinUI {
 
-    void OnDownloadClicked() {
+    public void OnDownloadClicked() {
         if (!catalogReady) { SetStatus("Esperando catálogo...", Color.yellow); return; }
         StartCoroutine(DownloadAndVisualize());
     }

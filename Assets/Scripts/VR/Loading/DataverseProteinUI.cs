@@ -11,10 +11,10 @@ namespace UMol {
 /// Dataset: https://dataverse.csuc.cat/dataset.xhtml?persistentId=doi:10.34810/DATA3230
 /// Split across 3 files: this one (fields, lifecycle, mode/run glue), .Catalog.cs
 /// (fetching/caching the Dataverse file list) and .Download.cs (download + load pipeline).
+/// The UI hierarchy is an Editor-built prefab (see DataversePanelRoot.prefab); this
+/// script only holds the business logic and references to its parts.
 /// </summary>
 public partial class DataverseProteinUI : MonoBehaviour {
-
-    public Vector3 spawnPosition = new Vector3(-0.5f, 1.2f, 1.4f);
 
     // ── Dataverse constants ───────────────────────────────────────────────────
     const string BASE_URL   = "https://dataverse.csuc.cat";
@@ -43,13 +43,18 @@ public partial class DataverseProteinUI : MonoBehaviour {
     string lastLoadedStructName = null;
 
     // ── UI refs ───────────────────────────────────────────────────────────────
-    Text   statusText;
-    Text   progressText;
-    Button downloadBtn;
-    Button gotoBtn;
-    Button[] modeButtons = new Button[2];
-    Button[] runButtons  = new Button[2];
-    Text     dcdCountLabel;
+    [SerializeField] Text   statusText;
+    [SerializeField] Text   progressText;
+    [SerializeField] Button downloadBtn;
+    [SerializeField] Button gotoBtn;
+    [SerializeField] Button[] modeButtons = new Button[2];
+    [SerializeField] Button[] runButtons  = new Button[2];
+    [SerializeField] Text     dcdCountLabel;
+
+    // HoldButtonHelper.onHold es un System.Action de código, no un UnityEvent,
+    // así que no se puede enganchar desde el Inspector — se asigna aquí en Start().
+    [SerializeField] HoldButtonHelper dcdMinusHold;
+    [SerializeField] HoldButtonHelper dcdPlusHold;
 
     static readonly Color bg        = new Color(0.06f, 0.08f, 0.14f, 0.95f);
     static readonly Color btnBlue   = new Color(0.15f, 0.30f, 0.65f, 1f);
@@ -59,19 +64,28 @@ public partial class DataverseProteinUI : MonoBehaviour {
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     void Start() {
-        BuildPanel();
+        if (dcdMinusHold) dcdMinusHold.onHold = OnDCDMinus;
+        if (dcdPlusHold)  dcdPlusHold.onHold  = OnDCDPlus;
         StartCoroutine(LoadCatalog());
     }
 
     // ── Callbacks ─────────────────────────────────────────────────────────────
 
-    void OnGotoClicked() {
+    public void OnGotoClicked() {
         if (string.IsNullOrEmpty(lastLoadedStructName)) return;
         var sm = UnityMolMain.getStructureManager();
         if (sm.GetStructure(lastLoadedStructName) == null) return;
         APIPython.centerOnStructure(lastLoadedStructName, recordCommand: false);
         SetStatus($"Centrando en {lastLoadedStructName}", Color.cyan);
     }
+
+    public void OnSelectModeUnmodified() { SelectMode(Mode.Unmodified); }
+    public void OnSelectModeModified()   { SelectMode(Mode.Modified); }
+    public void OnSelectRun1()           { SelectRun(Run.Run1); }
+    public void OnSelectRun2()           { SelectRun(Run.Run2); }
+
+    public void OnDCDMinus() { nDCDFiles = Mathf.Max(1, nDCDFiles - 1); UpdateDCDLabel(); }
+    public void OnDCDPlus()  { nDCDFiles = Mathf.Min(50, nDCDFiles + 1); UpdateDCDLabel(); }
 
     void UpdateDCDLabel() {
         if (dcdCountLabel) dcdCountLabel.text = nDCDFiles.ToString();
