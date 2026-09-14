@@ -68,10 +68,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7400024740317158674}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -211}
-  m_SizeDelta: {x: 500, y: 22}
+  m_AnchoredPosition: {x: 129.99998, y: -284.3}
+  m_SizeDelta: {x: 239.99997, y: 242}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7222392971941989110
 CanvasRenderer:
@@ -862,10 +862,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7400024740317158674}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -129}
-  m_SizeDelta: {x: 500, y: 18}
+  m_AnchoredPosition: {x: 130.55005, y: -228.6}
+  m_SizeDelta: {x: 238.90009, y: 238}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4155937741613110765
 CanvasRenderer:
@@ -945,7 +945,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -163.3, y: -169}
+  m_AnchoredPosition: {x: -163.3, y: -142.3}
   m_SizeDelta: {x: 153.3, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2410972949225803845
@@ -1189,7 +1189,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -169}
+  m_AnchoredPosition: {x: 0, y: -142.29967}
   m_SizeDelta: {x: 153.3, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4445596852253124447
@@ -1344,7 +1344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1960,6 +1960,7 @@ GameObject:
   - component: {fileID: 5106749320585236697}
   - component: {fileID: 514248691105793558}
   - component: {fileID: 1114374683678105969}
+  - component: {fileID: 1005555976468240}
   m_Layer: 0
   m_Name: Input_Prmtop
   m_TagString: Untagged
@@ -2094,6 +2095,19 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_ShouldActivateOnSelect: 1
+--- !u!114 &1005555976468240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6313573733284175961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f556875566da4c947883b9ff90a90ec3, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  Keyboard: {fileID: 0}
 --- !u!1 &7659162350868926161
 GameObject:
   m_ObjectHideFlags: 0
@@ -2130,7 +2144,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -241}
+  m_AnchoredPosition: {x: 0, y: -204.30006}
   m_SizeDelta: {x: 480, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6020251296858686990
@@ -2497,7 +2511,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 163.3, y: -169}
+  m_AnchoredPosition: {x: 163.3, y: -142.29967}
   m_SizeDelta: {x: 153.3, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8221771038924764450
@@ -2839,6 +2853,7 @@ GameObject:
   - component: {fileID: 7451030414220378258}
   - component: {fileID: 2486081616354363595}
   - component: {fileID: 3841622508859314489}
+  - component: {fileID: 1012379483270152}
   m_Layer: 0
   m_Name: Input_DCD
   m_TagString: Untagged
@@ -2968,8 +2983,21 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: 
+  m_Text:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_ShouldActivateOnSelect: 1
+--- !u!114 &1012379483270152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8764812264132145787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f556875566da4c947883b9ff90a90ec3, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  Keyboard: {fileID: 0}
