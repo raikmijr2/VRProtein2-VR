@@ -71,17 +71,13 @@ public partial class AnimationPlayerUI {
 
         int n = Mathf.Min(posA.Length, posB.Length);
         if (lerpBuffer == null || lerpBuffer.Length < n) lerpBuffer = new Vector3[n];
-        bool anyNaN = false;
         for (int i = 0; i < n; i++) {
             Vector3 v = Vector3.Lerp(posA[i], posB[i], t);
             // Guard: a NaN atom position corrupts the whole mesh (Invalid localAABB)
-            if (float.IsNaN(v.x) || float.IsNaN(v.y) || float.IsNaN(v.z)) {
+            if (float.IsNaN(v.x) || float.IsNaN(v.y) || float.IsNaN(v.z))
                 v = posA[i];  // fallback to frame A
-                anyNaN = true;
-            }
             lerpBuffer[i] = v;
         }
-        if (anyNaN) Debug.LogWarning("[AnimPlayer] NaN en posiciones DCD — frame descartado");
 
         s.trajAtomPositions = lerpBuffer;
         s.trajUpdateAtomPositions();

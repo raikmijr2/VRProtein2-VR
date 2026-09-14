@@ -174,7 +174,6 @@ public class TrajAnimationUI : MonoBehaviour {
         if (statusText == null) return;
         statusText.text  = msg;
         statusText.color = col;
-        Debug.Log("[TrajAnim] " + msg);
     }
 }
 }

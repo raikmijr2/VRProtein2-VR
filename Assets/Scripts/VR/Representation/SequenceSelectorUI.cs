@@ -150,7 +150,6 @@ public class SequenceSelectorUI : MonoBehaviour {
 
     void SetStatus(string msg, Color col) {
         if (statusText) { statusText.text = msg; statusText.color = col; }
-        Debug.Log("[SeqSelector] " + msg);
     }
 
     // ── Teclado numérico ─────────────────────────────────────────────────────

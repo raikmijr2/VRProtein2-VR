@@ -75,13 +75,11 @@ public partial class RepresentationSwitcherUI {
         // ningún feedback de que la exportación había fallado.
         try {
             File.WriteAllText(path, sb.ToString());
-        } catch (System.Exception e) {
-            Debug.LogError("[VRProtein] Error al exportar PDB: " + e.Message);
+        } catch (System.Exception) {
             StartCoroutine(FlashExportError());
             return;
         }
 
-        Debug.Log("[VRProtein] PDB guardado en: " + path);
         StartCoroutine(FlashExportFeedback(filename));
     }
 

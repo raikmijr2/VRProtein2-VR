@@ -20,10 +20,7 @@ public partial class DataverseProteinUI {
                 string cached = null;
                 bool readOk = true;
                 try { cached = File.ReadAllText(CachePath); }
-                catch (Exception e) {
-                    readOk = false;
-                    Debug.LogWarning("[Dataverse] No se pudo leer la caché: " + e.Message);
-                }
+                catch (Exception) { readOk = false; }
                 if (readOk) {
                     ParseFileList(cached);
                     if (allFiles.Count > 0) {
@@ -81,9 +78,7 @@ public partial class DataverseProteinUI {
         string cacheJson = Json.Serialize(cacheRoot);
         try {
             File.WriteAllText(CachePath, cacheJson);
-        } catch (Exception e) {
-            Debug.LogWarning("[Dataverse] No se pudo escribir la caché: " + e.Message);
-        }
+        } catch (Exception) { }
 
         ParseFileList(collected);
         catalogReady = true;

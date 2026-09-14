@@ -139,7 +139,6 @@ public class PointerMeasurements : MonoBehaviour {
                 AudioSource.PlayClipAtPoint(source.clip, p);
 
             if (atomsArray[touchedAtoms] == null) {
-                Debug.LogError("Problem measuring atoms");
                 resetTouchedAtoms();
                 return;
             }

@@ -83,8 +83,6 @@ public partial class DataverseProteinUI {
         using var req = UnityWebRequest.Get(url);
         req.downloadHandler = new DownloadHandlerFile(savePath);
         yield return req.SendWebRequest();
-        if (req.result != UnityWebRequest.Result.Success)
-            Debug.LogError($"Download failed {url}: {req.error}");
     }
 
     IEnumerator LoadAndVisualize(string prmtopPath, string dcdFolder) {

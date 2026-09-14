@@ -134,7 +134,6 @@ public class PDBLoaderUI : MonoBehaviour {
 
     void SetStatus(string msg, Color col) {
         if (statusText) { statusText.text = msg; statusText.color = col; }
-        Debug.Log("[PDBLoader] " + msg);
     }
 }
 }

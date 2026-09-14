@@ -44,7 +44,6 @@ public static class MorphGenerator {
                 last[i]  = la[i].position;
             }
         } else {
-            Debug.LogWarning("[Morph] Sin frames suficientes — Generate devuelve false");
             return false;
         }
 
