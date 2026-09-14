@@ -653,7 +653,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &416897738731319803
 RectTransform:
   m_ObjectHideFlags: 0
@@ -670,7 +670,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 353, y: -80}
+  m_AnchoredPosition: {x: 365, y: -80}
   m_SizeDelta: {x: 46, y: 36}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1349639691124263400
@@ -1593,8 +1593,8 @@ MonoBehaviour:
   loopBtnImg: {fileID: 540958750601700638}
   playBtn: {fileID: 6905775594806684299}
   loopBtn: {fileID: 1832589304230849283}
-  structPrevBtn: {fileID: 5417065407885439899}
-  structNextBtn: {fileID: 8221800391772088213}
+  structPrevBtn: {fileID: 1330192452625264636}
+  structNextBtn: {fileID: 1486425760894766696}
   speedDownHold: {fileID: 6102445578964506507}
   speedUpHold: {fileID: 3108823130633973583}
   morphBtn: {fileID: 3405995489585851862}
