@@ -540,7 +540,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 10
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &819047586213724326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -586,9 +586,9 @@ MonoBehaviour:
   lightSlider: {fileID: 754557241369919876}
   ambientSlider: {fileID: 8753675114885470761}
   shadowSlider: {fileID: 2888198953153963587}
-  lightValueText: {fileID: 6179240939067427742}
-  ambientValueText: {fileID: 294372425255212114}
-  shadowValueText: {fileID: 5846796972574058861}
+  lightValueText: {fileID: 8749402355492090919}
+  ambientValueText: {fileID: 3548343795877816877}
+  shadowValueText: {fileID: 913208417293662090}
 --- !u!1 &4795546966952696144
 GameObject:
   m_ObjectHideFlags: 0

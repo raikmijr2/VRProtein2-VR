@@ -8,9 +8,15 @@ namespace UMol {
 /// Como el activateKeyboard.cs de UnityMol, pero además mueve el teclado VR
 /// compartido (KeyboardUI) junto al panel que se está usando, en vez de
 /// dejarlo siempre en su sitio fijo junto al menú nativo de UnityMol.
-/// Al perder el foco este campo, el teclado vuelve a su posición original
-/// para que siga apareciendo bien colocado si luego se usa un campo propio
-/// de UnityMol.
+///
+/// No se puede usar "¿sigue teniendo el foco este campo?" para decidir cuándo
+/// devolver el teclado a su sitio: al pulsar una tecla, Unity mueve la
+/// selección del EventSystem al propio botón del teclado (KeyboardUI.sendKey
+/// ni reasigna el foco ni cambia inpF), así que esa comprobación se volvía
+/// falsa en cada pulsación. En su lugar, cada instancia solo se considera
+/// "dueña" del teclado mientras keyboard.inpF siga apuntando a su propio
+/// campo — esa referencia solo cambia cuando otro campo (nuestro o nativo de
+/// UnityMol) reclama el teclado de verdad.
 /// </summary>
 [RequireComponent(typeof(InputField))]
 public class VRPanelKeyboardTrigger : MonoBehaviour {
@@ -23,9 +29,9 @@ public class VRPanelKeyboardTrigger : MonoBehaviour {
     static Vector3     originalLocalPos;
     static Quaternion  originalLocalRot;
     static bool captured = false;
+    static VRPanelKeyboardTrigger currentOwner;
 
     InputField currentInputField;
-    bool weMovedIt = false;
 
     void Update() {
         currentInputField = GetComponent<InputField>();
@@ -34,11 +40,11 @@ public class VRPanelKeyboardTrigger : MonoBehaviour {
             if (keyboard == null) return;
         }
 
-        bool isFocusedHere = UnityMolMain.inVR() &&
-                             EventSystem.current.currentSelectedGameObject == gameObject &&
-                             currentInputField.isFocused;
+        bool tappedHere = UnityMolMain.inVR() &&
+                          EventSystem.current.currentSelectedGameObject == gameObject &&
+                          currentInputField.isFocused;
 
-        if (isFocusedHere) {
+        if (tappedHere) {
             if (!captured) {
                 var kt = keyboard.transform;
                 originalParent   = kt.parent;
@@ -49,10 +55,12 @@ public class VRPanelKeyboardTrigger : MonoBehaviour {
             if (!keyboard.gameObject.activeInHierarchy) keyboard.gameObject.SetActive(true);
             keyboard.inpF = currentInputField;
             MoveNextToPanel();
-            weMovedIt = true;
-        } else if (weMovedIt) {
+            currentOwner = this;
+        } else if (currentOwner == this && keyboard.inpF != currentInputField) {
+            // El teclado ha pasado a otro campo (nuestro o nativo) - soltamos la
+            // reclamación y lo devolvemos a su sitio original.
             RestoreKeyboard();
-            weMovedIt = false;
+            currentOwner = null;
         }
     }
 
