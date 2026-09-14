@@ -153,7 +153,14 @@ public partial class AnimationPlayerUI : MonoBehaviour {
                 } else {
                     targetFrame = Mathf.Min(Mathf.FloorToInt(morphPlayheadFrame), totalFrames - 1);
                 }
-                if (targetFrame != anim.currentFrameId) anim.setModel(targetFrame);
+                if (targetFrame != anim.currentFrameId) {
+                    float _t0 = Time.realtimeSinceStartup;
+                    anim.setModel(targetFrame);
+                    float _ms = (Time.realtimeSinceStartup - _t0) * 1000f;
+                    Debug.Log("[DIAG-morph] setModel(" + targetFrame + "/" + totalFrames + ") took " + _ms.ToString("F1") +
+                               "ms | speed=" + speed + " | dt=" + Time.deltaTime.ToString("F3") +
+                               " | playhead=" + morphPlayheadFrame.ToString("F2"));
+                }
             } else {
                 morphPlayheadFrame = anim.currentFrameId; // stay in sync while paused/stepped manually
             }
