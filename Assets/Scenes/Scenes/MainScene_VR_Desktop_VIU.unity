@@ -106324,6 +106324,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SequenceSelectorPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 1994027751165524492, guid: 1f07101b84737e64396a22323d1f3a45, type: 3}
+      propertyPath: m_Text
+      value: "Sense prote\xEFna carregada"
+      objectReference: {fileID: 0}
+    - target: {fileID: 3115989808725586597, guid: 1f07101b84737e64396a22323d1f3a45, type: 3}
+      propertyPath: m_Text
+      value: Tria un rang i prem SELECCIONAR
+      objectReference: {fileID: 0}
     - target: {fileID: 4430363627898092378, guid: 1f07101b84737e64396a22323d1f3a45, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -106403,6 +106411,22 @@ PrefabInstance:
     - target: {fileID: 4430363627898092378, guid: 1f07101b84737e64396a22323d1f3a45, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6453126535264825366, guid: 1f07101b84737e64396a22323d1f3a45, type: 3}
+      propertyPath: m_Text
+      value: 'Fins a residu:'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6586743300835340733, guid: 1f07101b84737e64396a22323d1f3a45, type: 3}
+      propertyPath: m_Text
+      value: "SELECCI\xD3 SEQ\xDC\xC8NCIA"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7116092490534388125, guid: 1f07101b84737e64396a22323d1f3a45, type: 3}
+      propertyPath: m_Text
+      value: 'Des de residu:'
+      objectReference: {fileID: 0}
+    - target: {fileID: 7973661544395199881, guid: 1f07101b84737e64396a22323d1f3a45, type: 3}
+      propertyPath: m_Text
+      value: NETEJAR
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -108190,6 +108214,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 967266201778564447, guid: 8c033129fcd03c349af88918aa2901ff, type: 3}
+      propertyPath: m_Text
+      value: "Sense prote\xEFna"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5256564076156480210, guid: 8c033129fcd03c349af88918aa2901ff, type: 3}
+      propertyPath: m_Text
+      value: "ANIMACI\xD3 MOLECULAR"
+      objectReference: {fileID: 0}
     - target: {fileID: 5718763020195583228, guid: 8c033129fcd03c349af88918aa2901ff, type: 3}
       propertyPath: m_Name
       value: AnimationPlayerPanel
@@ -108287,9 +108319,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 52885850219151733, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
+      propertyPath: m_Text
+      value: "SIMULACI\xD3 MOLECULAR"
+      objectReference: {fileID: 0}
+    - target: {fileID: 355665783006758340, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
+      propertyPath: m_Text
+      value: "ANAR A LA PROTE\xCFNA"
+      objectReference: {fileID: 0}
+    - target: {fileID: 564094137772307621, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
+      propertyPath: m_Text
+      value: DESCARREGAR I VISUALITZAR
+      objectReference: {fileID: 0}
     - target: {fileID: 2597212444562472120, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
       propertyPath: m_Name
       value: DataVersePanelRoot
+      objectReference: {fileID: 0}
+    - target: {fileID: 3701151783322246503, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
+      propertyPath: m_Text
+      value: "Simulaci\xF3:"
+      objectReference: {fileID: 0}
+    - target: {fileID: 4670578949874398339, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
+      propertyPath: m_Text
+      value: Iniciant...
+      objectReference: {fileID: 0}
+    - target: {fileID: 5030952719016164286, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
+      propertyPath: m_Text
+      value: Sense Modificar
       objectReference: {fileID: 0}
     - target: {fileID: 5819531260127252429, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
       propertyPath: m_Pivot.x
@@ -108371,6 +108427,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6001598392978401927, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
+      propertyPath: m_Text
+      value: 'Fitxers DCD (aprox. 100 frames c/u):'
+      objectReference: {fileID: 0}
+    - target: {fileID: 7552601971186500911, guid: afec7050c62b01745b9b6523a31ca8c7, type: 3}
+      propertyPath: m_Text
+      value: 'Tipus de lisina:'
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -108384,13 +108448,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 688132292026867135, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
+      propertyPath: m_Text
+      value: 'Fitxer PRMTOP:'
+      objectReference: {fileID: 0}
+    - target: {fileID: 722097100707524654, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
+      propertyPath: m_Text
+      value: Ruta al fitxer...
+      objectReference: {fileID: 0}
     - target: {fileID: 1865517776106892544, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
       propertyPath: m_Name
       value: TrajAnimPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 3677557766950980931, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
+      propertyPath: m_Text
+      value: Llest.
+      objectReference: {fileID: 0}
+    - target: {fileID: 3905097645394501067, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
+      propertyPath: m_Text
+      value: CARREGAR
+      objectReference: {fileID: 0}
     - target: {fileID: 5563424761296235176, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6111863110045013833, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
+      propertyPath: m_Text
+      value: 'Velocitat (fps):'
       objectReference: {fileID: 0}
     - target: {fileID: 6282313193479676246, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
       propertyPath: m_AnchorMax.x
@@ -108411,6 +108495,10 @@ PrefabInstance:
     - target: {fileID: 6923066655502162052, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371088117183383520, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
+      propertyPath: m_Text
+      value: "TRAJECT\xD2RIA PRMTOP + DCD"
       objectReference: {fileID: 0}
     - target: {fileID: 7400024740317158674, guid: 123e0921852d669409554ef4b3ebbb11, type: 3}
       propertyPath: m_Pivot.x
@@ -108509,6 +108597,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 953385126370870809, guid: 23b918a64ae4b9d43939250b610c0c17, type: 3}
+      propertyPath: m_Text
+      value: "COLOREJAR  \u25BC"
+      objectReference: {fileID: 0}
+    - target: {fileID: 3049198030448796819, guid: 23b918a64ae4b9d43939250b610c0c17, type: 3}
+      propertyPath: m_Text
+      value: Linies
+      objectReference: {fileID: 0}
+    - target: {fileID: 3972771735548302515, guid: 23b918a64ae4b9d43939250b610c0c17, type: 3}
+      propertyPath: m_Text
+      value: Per tipus de residu
+      objectReference: {fileID: 0}
     - target: {fileID: 4265815622262473687, guid: 23b918a64ae4b9d43939250b610c0c17, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -108593,6 +108693,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: RepSwitcherPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 5944525705047485207, guid: 23b918a64ae4b9d43939250b610c0c17, type: 3}
+      propertyPath: m_Text
+      value: "Estruct. 2\xE0ria"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8235024045449365517, guid: 23b918a64ae4b9d43939250b610c0c17, type: 3}
+      propertyPath: m_Text
+      value: "Estructura secund\xE0ria"
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -108608,7 +108716,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 294372425255212114, guid: 661366a23f7febf4c96c81e4c65fc061, type: 3}
       propertyPath: m_Text
-      value: Ambiente
+      value: Llum ambient
       objectReference: {fileID: 0}
     - target: {fileID: 1034519085716580096, guid: 661366a23f7febf4c96c81e4c65fc061, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -108744,11 +108852,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5846796972574058861, guid: 661366a23f7febf4c96c81e4c65fc061, type: 3}
       propertyPath: m_Text
-      value: Sombras
+      value: Ombres
       objectReference: {fileID: 0}
     - target: {fileID: 6063788780048006191, guid: 661366a23f7febf4c96c81e4c65fc061, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -2.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150998864989488584, guid: 661366a23f7febf4c96c81e4c65fc061, type: 3}
+      propertyPath: m_Text
+      value: "IL\xB7LUMINACI\xD3"
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179240939067427742, guid: 661366a23f7febf4c96c81e4c65fc061, type: 3}
+      propertyPath: m_Text
+      value: Intensitat llum
       objectReference: {fileID: 0}
     - target: {fileID: 6188971609037195566, guid: 661366a23f7febf4c96c81e4c65fc061, type: 3}
       propertyPath: m_AnchorMax.x
@@ -108773,6 +108889,10 @@ PrefabInstance:
     - target: {fileID: 7542741767584887439, guid: 661366a23f7febf4c96c81e4c65fc061, type: 3}
       propertyPath: m_AnchorMin.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7576074670561015683, guid: 661366a23f7febf4c96c81e4c65fc061, type: 3}
+      propertyPath: m_Text
+      value: CONTROLS DE LLUM
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -118529,6 +118649,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PDBLoaderPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 2182627813375838085, guid: fe9b980a1619c80468ab2cada6933168, type: 3}
+      propertyPath: m_Text
+      value: 'Codi PDB (ex: 5P21):'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4885800798538466511, guid: fe9b980a1619c80468ab2cada6933168, type: 3}
+      propertyPath: m_Text
+      value: "CARREGAR PROTE\xCFNA PDB"
+      objectReference: {fileID: 0}
     - target: {fileID: 5454930695519346722, guid: fe9b980a1619c80468ab2cada6933168, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -118608,6 +118736,14 @@ PrefabInstance:
     - target: {fileID: 5454930695519346722, guid: fe9b980a1619c80468ab2cada6933168, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559911766551697747, guid: fe9b980a1619c80468ab2cada6933168, type: 3}
+      propertyPath: m_Text
+      value: CARREGAR I VISUALITZAR
+      objectReference: {fileID: 0}
+    - target: {fileID: 7355890068532085363, guid: fe9b980a1619c80468ab2cada6933168, type: 3}
+      propertyPath: m_Text
+      value: "ANAR A LA PROTE\xCFNA"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

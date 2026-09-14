@@ -310,7 +310,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 10
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &2591163477065234221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2059,7 +2059,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Desde residuo:'
+  m_Text: 'Fins a residu:'
 --- !u!1 &4676458137661908426
 GameObject:
   m_ObjectHideFlags: 0
@@ -2271,7 +2271,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "SELECCI\xD3N SECUENCIA"
+  m_Text: "SELECCI\xD3 SEQ\xDC\xC8NCIA"
 --- !u!1 &5148843635847557603
 GameObject:
   m_ObjectHideFlags: 0
@@ -2956,7 +2956,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: LIMPIAR
+  m_Text: NETEJAR
 --- !u!1 &6554009133484686176
 GameObject:
   m_ObjectHideFlags: 0
@@ -3110,7 +3110,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Sin prote\xEDna cargada"
+  m_Text: "Sense prote\xEFna carregada"
 --- !u!1 &6838818522291906102
 GameObject:
   m_ObjectHideFlags: 0
@@ -4037,7 +4037,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Desde residuo:'
+  m_Text: 'Des de residu:'
 --- !u!1 &8146493716604518648
 GameObject:
   m_ObjectHideFlags: 0
@@ -4355,7 +4355,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Elige un rango y pulsa SELECCIONAR
+  m_Text: Tria un rang i prem SELECCIONAR
 --- !u!1 &8857473725437862504
 GameObject:
   m_ObjectHideFlags: 0
