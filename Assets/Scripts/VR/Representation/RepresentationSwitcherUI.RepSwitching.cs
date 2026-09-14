@@ -7,7 +7,7 @@ namespace UMol {
 
 public partial class RepresentationSwitcherUI {
 
-    void OnRepButtonClicked(string repCode) {
+    public void OnRepButtonClicked(string repCode) {
         if (UnityMolMain.getStructureManager().loadedStructures.Count == 0) return;
 
         // Surface es un overlay transparente independiente — toggle, no cambia la rep principal
@@ -223,7 +223,7 @@ public partial class RepresentationSwitcherUI {
         hasExtractedSelection = false;
     }
 
-    void OnModeToggle() {
+    public void OnModeToggle() {
         var selM = UnityMolMain.getSelectionManager();
         bool hasSelection = selM != null &&
                             selM.currentSelection != null &&

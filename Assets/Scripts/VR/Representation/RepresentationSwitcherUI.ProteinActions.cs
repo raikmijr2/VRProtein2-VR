@@ -9,7 +9,7 @@ namespace UMol {
 
 public partial class RepresentationSwitcherUI {
 
-    void OnResetProtein() {
+    public void OnResetProtein() {
         var sm = UnityMolMain.getStructureManager();
         if (sm == null || sm.loadedStructures.Count == 0) return;
 
@@ -49,7 +49,7 @@ public partial class RepresentationSwitcherUI {
             seqSel.ResetHighlights();
     }
 
-    void OnExportPDB() {
+    public void OnExportPDB() {
         var sm = UnityMolMain.getStructureManager();
         if (sm == null || sm.loadedStructures.Count == 0) return;
 
