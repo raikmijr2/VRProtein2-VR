@@ -32,8 +32,6 @@ public class VRPanelKeyboardTrigger : MonoBehaviour {
     static VRPanelKeyboardTrigger currentOwner;
 
     InputField currentInputField;
-    bool lastTappedHere = false;
-    float nextHeartbeat = 0f;
 
     void Update() {
         currentInputField = GetComponent<InputField>();
@@ -42,27 +40,9 @@ public class VRPanelKeyboardTrigger : MonoBehaviour {
             if (keyboard == null) return;
         }
 
-        if (currentOwner == this && Time.unscaledTime >= nextHeartbeat) {
-            nextHeartbeat = Time.unscaledTime + 0.5f;
-            var kt = keyboard.transform;
-            Debug.Log("[DIAG-kb] heartbeat parent=" + (kt.parent != null ? kt.parent.name : "null") +
-                       " pos=" + kt.position + " active=" + keyboard.gameObject.activeInHierarchy +
-                       " inpF=" + (keyboard.inpF != null ? keyboard.inpF.gameObject.name : "null"));
-        }
-
         bool tappedHere = UnityMolMain.inVR() &&
                           EventSystem.current.currentSelectedGameObject == gameObject &&
                           currentInputField.isFocused;
-
-        if (tappedHere != lastTappedHere) {
-            var sel = EventSystem.current.currentSelectedGameObject;
-            Debug.Log("[DIAG-kb] " + gameObject.name + " tappedHere " + lastTappedHere + " -> " + tappedHere +
-                       " | selected=" + (sel != null ? sel.name : "null") +
-                       " | isFocused=" + currentInputField.isFocused +
-                       " | keyboard.inpF=" + (keyboard.inpF != null ? keyboard.inpF.gameObject.name : "null") +
-                       " | currentOwner=" + (currentOwner != null ? currentOwner.gameObject.name : "null"));
-            lastTappedHere = tappedHere;
-        }
 
         if (tappedHere) {
             if (!captured) {
@@ -71,7 +51,6 @@ public class VRPanelKeyboardTrigger : MonoBehaviour {
                 originalLocalPos = kt.localPosition;
                 originalLocalRot = kt.localRotation;
                 captured = true;
-                Debug.Log("[DIAG-kb] captured original parent=" + (originalParent != null ? originalParent.name : "null"));
             }
             if (!keyboard.gameObject.activeInHierarchy) keyboard.gameObject.SetActive(true);
             keyboard.inpF = currentInputField;
@@ -80,8 +59,6 @@ public class VRPanelKeyboardTrigger : MonoBehaviour {
         } else if (currentOwner == this && keyboard.inpF != currentInputField) {
             // El teclado ha pasado a otro campo (nuestro o nativo) - soltamos la
             // reclamación y lo devolvemos a su sitio original.
-            Debug.Log("[DIAG-kb] RESTORE fired on " + gameObject.name + " because keyboard.inpF=" +
-                       (keyboard.inpF != null ? keyboard.inpF.gameObject.name : "null") + " != " + gameObject.name);
             RestoreKeyboard();
             currentOwner = null;
         }
@@ -103,6 +80,15 @@ public class VRPanelKeyboardTrigger : MonoBehaviour {
         kt.SetParent(originalParent, false);
         kt.localPosition = originalLocalPos;
         kt.localRotation = originalLocalRot;
+    }
+
+    /// <summary>Oculta el teclado VR compartido (p.ej. al pulsar un botón de "Cargar").</summary>
+    public static void HideKeyboard() {
+        if (keyboard != null) {
+            keyboard.gameObject.SetActive(false);
+            keyboard.inpF = null;
+        }
+        currentOwner = null;
     }
 }
 }

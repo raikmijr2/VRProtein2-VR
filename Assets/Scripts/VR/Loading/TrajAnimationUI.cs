@@ -51,6 +51,7 @@ public class TrajAnimationUI : MonoBehaviour {
     // ── Callbacks ─────────────────────────────────────────────────────────────
 
     public void OnLoadClicked() {
+        VRPanelKeyboardTrigger.HideKeyboard();
         string prmtop = prmtopInput.text.Trim();
         string dcdDir = dcdFolderInput.text.Trim();
 
