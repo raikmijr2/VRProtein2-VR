@@ -105,7 +105,7 @@ public partial class AnimationPlayerUI {
                 : mode == 1 ? MorphGeneratorQuality.Generate(s)
                 :             MorphGeneratorPhysical.Generate(s);
         if (!ok) {
-            if (frameLabel) frameLabel.text = "Necesitas ≥ 2 frames de trayectoria";
+            if (frameLabel) frameLabel.text = "Necessites ≥ 2 frames de trajectòria";
             return;
         }
 

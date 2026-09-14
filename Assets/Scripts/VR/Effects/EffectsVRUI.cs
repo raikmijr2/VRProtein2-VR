@@ -25,13 +25,13 @@ public class EffectsVRUI : MonoBehaviour {
     void BuildSection(Transform content) {
         GameObject section = MakeVerticalContainer("EffectsVRSection", content, secBg, 6, 6);
 
-        MakeLabel(section.transform, "── ILUMINACIÓN ──", 13, lblColor, 24f, FontStyle.Bold);
+        MakeLabel(section.transform, "── IL·LUMINACIÓ ──", 13, lblColor, 24f, FontStyle.Bold);
 
-        MakeSliderRow(section.transform, "Intensidad luz",   0f, 3f, 1f,
+        MakeSliderRow(section.transform, "Intensitat llum",  0f, 3f, 1f,
             v => APIPython.setDirLightIntensity(v));
-        MakeSliderRow(section.transform, "Luz ambiente",     0f, 3f, 1f,
+        MakeSliderRow(section.transform, "Llum ambient",     0f, 3f, 1f,
             v => APIPython.setAmbientLightIntensity(v));
-        MakeSliderRow(section.transform, "Sombras",          0f, 1f, 0.5f,
+        MakeSliderRow(section.transform, "Ombres",           0f, 1f, 0.5f,
             v => APIPython.setDirLightShadow(v));
     }
 

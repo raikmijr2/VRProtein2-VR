@@ -11,7 +11,7 @@ namespace UMol {
 public partial class DataverseProteinUI {
 
     public void OnDownloadClicked() {
-        if (!catalogReady) { SetStatus("Esperando catálogo...", Color.yellow); return; }
+        if (!catalogReady) { SetStatus("Esperant catàleg...", Color.yellow); return; }
         StartCoroutine(DownloadAndVisualize());
     }
 
@@ -38,13 +38,13 @@ public partial class DataverseProteinUI {
             string hint = "";
             int n = 0;
             foreach (var d in dirs) { hint += "\n" + d; if (++n >= 5) { hint += "\n…"; break; } }
-            SetStatus($"Sin DCDs para {dirFilter}\nDirs en catálogo:{hint}", Color.red);
+            SetStatus($"Sense DCD per a {dirFilter}\nDirectoris al catàleg:{hint}", Color.red);
             downloadBtn.interactable = true;
             yield break;
         }
 
         var toDownload = filtered.GetRange(0, Mathf.Min(nDCDFiles, filtered.Count));
-        SetStatus($"Descargando {toDownload.Count + 1} archivos...", Color.white);
+        SetStatus($"Baixant {toDownload.Count + 1} fitxers...", Color.white);
 
         // 3. Download PRMTOP if needed
         string prmtopPath = Path.Combine(DataPath, prmtopName);
@@ -52,7 +52,7 @@ public partial class DataverseProteinUI {
             SetProgress(0, toDownload.Count + 1);
             yield return DownloadFile(prmtopId, prmtopPath);
             if (!File.Exists(prmtopPath)) {
-                SetStatus("Error descargando PRMTOP", Color.red);
+                SetStatus("Error en baixar el PRMTOP", Color.red);
                 downloadBtn.interactable = true;
                 yield break;
             }
@@ -70,7 +70,7 @@ public partial class DataverseProteinUI {
         }
 
         SetProgress(toDownload.Count + 1, toDownload.Count + 1);
-        SetStatus("Descarga completa. Cargando proteína...", Color.green);
+        SetStatus("Baixada completa. Carregant proteïna...", Color.green);
         yield return null;
 
         // 5. Load and visualize
@@ -94,7 +94,7 @@ public partial class DataverseProteinUI {
         int natom = 0;
         List<Vector3[]> frames = null;
         string dcdError = null;
-        SetStatus("Leyendo frames DCD...", Color.white);
+        SetStatus("Llegint frames DCD...", Color.white);
         var dcdTask = System.Threading.Tasks.Task.Run(() => {
             try { frames = DCDReader.ReadFolder(dcdFolder, out natom); }
             catch (Exception e) { dcdError = e.Message; }
@@ -102,9 +102,9 @@ public partial class DataverseProteinUI {
         while (!dcdTask.IsCompleted) yield return null;
 
         if (dcdError != null) { SetStatus("Error DCD: " + dcdError, Color.red); downloadBtn.interactable = true; yield break; }
-        if (frames == null || frames.Count == 0) { SetStatus("Sin frames DCD en " + dcdFolder, Color.red); downloadBtn.interactable = true; yield break; }
+        if (frames == null || frames.Count == 0) { SetStatus("Sense frames DCD a " + dcdFolder, Color.red); downloadBtn.interactable = true; yield break; }
 
-        SetStatus($"DCD: {frames.Count} frames × {natom} átomos. Cargando PRMTOP...", Color.white);
+        SetStatus($"DCD: {frames.Count} frames × {natom} àtoms. Carregant PRMTOP...", Color.white);
         yield return null;
 
         // [2] Load PRMTOP (uses Unity API, must be on main thread)
@@ -120,18 +120,18 @@ public partial class DataverseProteinUI {
             SetStatus("Error PRMTOP: " + e.Message, Color.red); downloadBtn.interactable = true; yield break;
         }
         UnityMolMain.disableSurfaceThread = prevDisableSurf;
-        if (s == null) { SetStatus("Error: estructura nula tras cargar PRMTOP.", Color.red); downloadBtn.interactable = true; yield break; }
+        if (s == null) { SetStatus("Error: estructura nul·la després de carregar el PRMTOP.", Color.red); downloadBtn.interactable = true; yield break; }
 
         int proteinAtoms = dcdIndices != null ? dcdIndices.Length : natom;
 
         if (proteinAtoms == 0) {
-            SetStatus($"Error: 0 átomos proteína en {Path.GetFileName(prmtopPath)}.\nTodos se filtraron como solvente.", Color.red);
+            SetStatus($"Error: 0 àtoms de proteïna a {Path.GetFileName(prmtopPath)}.\nTots s'han filtrat com a dissolvent.", Color.red);
             downloadBtn.interactable = true; yield break;
         }
 
         // [3] Filter frames on background thread to keep only protein atoms
         int solventAtoms = natom - proteinAtoms;
-        SetStatus($"Filtrando {frames.Count} frames ({solventAtoms} átomos solvente)...", Color.white);
+        SetStatus($"Filtrant {frames.Count} frames ({solventAtoms} àtoms de dissolvent)...", Color.white);
         yield return null;
 
         List<Vector3[]> filteredFrames = null;
@@ -186,7 +186,7 @@ public partial class DataverseProteinUI {
             c0 /= f0.Length;
 
             if (c0.sqrMagnitude > 200f * 200f) {
-                SetStatus($"Centrando coordenadas ({c0.magnitude:F0} Å)...", Color.white);
+                SetStatus($"Centrant coordenades ({c0.magnitude:F0} Å)...", Color.white);
                 var shiftVec = c0;
                 var shiftTask = System.Threading.Tasks.Task.Run(() => {
                     foreach (var frame in filteredFrames)
@@ -249,8 +249,8 @@ public partial class DataverseProteinUI {
         lastLoadedStructName = s.name;
         if (gotoBtn != null) gotoBtn.interactable = true;
 
-        string repNote = repCount == 0 ? " ⚠ sin rep visible — pulsa IR A PROTEINA" : "";
-        SetStatus($"✓ {s.name} | {filteredFrames?.Count ?? 0} frames | {proteinAtoms} át.{repNote}", Color.green);
+        string repNote = repCount == 0 ? " ⚠ sense representació visible — prem ANAR A LA PROTEÏNA" : "";
+        SetStatus($"✓ {s.name} | {filteredFrames?.Count ?? 0} frames | {proteinAtoms} àt.{repNote}", Color.green);
     }
 
     static List<Vector3[]> FilterFrames(List<Vector3[]> frames, int[] indices) {

@@ -11,7 +11,7 @@ namespace UMol {
 public partial class DataverseProteinUI {
 
     IEnumerator LoadCatalog() {
-        SetStatus("Cargando catálogo...", Color.white);
+        SetStatus("Carregant catàleg...", Color.white);
 
         // Try cache first (valid for 7 days)
         if (File.Exists(CachePath)) {
@@ -28,7 +28,7 @@ public partial class DataverseProteinUI {
                     ParseFileList(cached);
                     if (allFiles.Count > 0) {
                         catalogReady = true;
-                        SetStatus($"Catálogo cargado ({allFiles.Count} archivos)", Color.green);
+                        SetStatus($"Catàleg carregat ({allFiles.Count} fitxers)", Color.green);
                         yield break;
                     }
                 }
@@ -48,12 +48,12 @@ public partial class DataverseProteinUI {
             yield return req.SendWebRequest();
 
             if (req.result != UnityWebRequest.Result.Success) {
-                SetStatus("Error al cargar catálogo: " + req.error, Color.red);
+                SetStatus("Error en carregar el catàleg: " + req.error, Color.red);
                 yield break;
             }
 
             var root = Json.Deserialize(req.downloadHandler.text) as Dictionary<string, object>;
-            if (root == null) { SetStatus("JSON inválido", Color.red); yield break; }
+            if (root == null) { SetStatus("JSON no vàlid", Color.red); yield break; }
 
             // Dataverse standard: data is a List<object>
             List<object> page = null;
@@ -72,7 +72,7 @@ public partial class DataverseProteinUI {
             more = page.Count == limit;  // if we got a full page, there may be more
             offset += limit;
 
-            SetStatus($"Catálogo: {collected.Count} archivos...", Color.white);
+            SetStatus($"Catàleg: {collected.Count} fitxers...", Color.white);
             yield return null;
         }
 
@@ -87,7 +87,7 @@ public partial class DataverseProteinUI {
 
         ParseFileList(collected);
         catalogReady = true;
-        SetStatus($"Catálogo listo ({allFiles.Count} archivos DCD)", Color.green);
+        SetStatus($"Catàleg llest ({allFiles.Count} fitxers DCD)", Color.green);
     }
 
     void ParseFileList(string json) {

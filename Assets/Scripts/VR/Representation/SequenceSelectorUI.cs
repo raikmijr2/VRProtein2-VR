@@ -65,7 +65,7 @@ public class SequenceSelectorUI : MonoBehaviour {
     void RefreshRangeLabel() {
         var sm = UnityMolMain.getStructureManager();
         if (sm == null || sm.loadedStructures.Count == 0) {
-            if (rangeLabel) rangeLabel.text = "Sin proteína cargada"; return;
+            if (rangeLabel) rangeLabel.text = "Sense proteïna carregada"; return;
         }
         var s = sm.loadedStructures[0];
         int minId = int.MaxValue, maxId = int.MinValue;
@@ -75,9 +75,9 @@ public class SequenceSelectorUI : MonoBehaviour {
             if (a.residue.id > maxId) maxId = a.residue.id;
         }
         if (minId == int.MaxValue) {
-            if (rangeLabel) rangeLabel.text = "Sin residuos proteicos"; return;
+            if (rangeLabel) rangeLabel.text = "Sense residus proteics"; return;
         }
-        if (rangeLabel) rangeLabel.text = $"{s.name}  |  residuos {minId} – {maxId}";
+        if (rangeLabel) rangeLabel.text = $"{s.name}  |  residus {minId} – {maxId}";
         if (fromInput && string.IsNullOrEmpty(fromInput.text)) fromInput.text = minId.ToString();
         if (toInput   && string.IsNullOrEmpty(toInput.text))   toInput.text   = maxId.ToString();
     }
@@ -85,14 +85,14 @@ public class SequenceSelectorUI : MonoBehaviour {
     public void OnSelectClicked() {
         var sm = UnityMolMain.getStructureManager();
         if (sm == null || sm.loadedStructures.Count == 0) {
-            SetStatus("No hay proteína cargada.", Color.yellow); return;
+            SetStatus("No hi ha proteïna carregada.", Color.yellow); return;
         }
         if (!int.TryParse(fromInput?.text, out int fromRes) ||
             !int.TryParse(toInput?.text,   out int toRes)) {
-            SetStatus("Introduce números de residuo válidos.", Color.yellow); return;
+            SetStatus("Introdueix números de residu vàlids.", Color.yellow); return;
         }
         if (fromRes > toRes) {
-            SetStatus("'Desde' debe ser ≤ 'Hasta'.", Color.yellow); return;
+            SetStatus("'Des de' ha de ser ≤ 'Fins a'.", Color.yellow); return;
         }
 
         var selMgr = UnityMolMain.getSelectionManager();
@@ -102,7 +102,7 @@ public class SequenceSelectorUI : MonoBehaviour {
                                       silent: true, setAsCurrentSelection: true);
 
         if (result == null || result.atoms.Count == 0) {
-            SetStatus("No hay residuos en ese rango.", Color.yellow); return;
+            SetStatus("No hi ha residus en aquest rang.", Color.yellow); return;
         }
 
         // Limpiar highlights del controlador A y aplicar amarillo igual que PointerAtomSelection.AddHighlight
@@ -112,7 +112,7 @@ public class SequenceSelectorUI : MonoBehaviour {
         SeqApplyHighlight(result.atoms);
         lastRepCount = UnityMolMain.getRepresentationManager()?.representations.Count ?? 0;
 
-        SetStatus($"{result.atoms.Count} átomos seleccionados  |  residuos {fromRes}–{toRes}", Color.green);
+        SetStatus($"{result.atoms.Count} àtoms seleccionats  |  residus {fromRes}–{toRes}", Color.green);
     }
 
     public void OnClearClicked() {
@@ -122,7 +122,7 @@ public class SequenceSelectorUI : MonoBehaviour {
             APIPython.select("nothing", selMgr.currentSelection.name,
                              createSelection: true, addToExisting: false, silent: true);
         }
-        SetStatus("Selección limpiada.", Color.white);
+        SetStatus("Selecció netejada.", Color.white);
     }
 
     void SeqApplyHighlight(List<UnityMolAtom> atoms) {

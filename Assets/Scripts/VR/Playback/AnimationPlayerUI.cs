@@ -92,7 +92,7 @@ public partial class AnimationPlayerUI : MonoBehaviour {
         if (total == 0) {
             smoothPlay = false;
             manualPlay = false;
-            if (structLabel)      structLabel.text      = "Sin proteína cargada";
+            if (structLabel)      structLabel.text      = "Sense proteïna carregada";
             if (structIndexLabel) structIndexLabel.text = "";
             if (frameLabel)       frameLabel.text       = "";
             if (playBtnImg)       playBtnImg.color      = btnNormal;
@@ -123,7 +123,7 @@ public partial class AnimationPlayerUI : MonoBehaviour {
         var anim = GetAnimatedStructure(sm);
         if (anim == null || anim != s) {
             // La proteína seleccionada no tiene animación todavía
-            if (frameLabel)   frameLabel.text  = "Sin animación  →  pulsa PLAY";
+            if (frameLabel)   frameLabel.text  = "Sense animació  →  prem PLAY";
             if (playBtnImg)   playBtnImg.color = btnNormal;
             if (playBtnLabel) playBtnLabel.text = "▶ PLAY";
             UpdateButtonColorBlock(playBtn, btnNormal);

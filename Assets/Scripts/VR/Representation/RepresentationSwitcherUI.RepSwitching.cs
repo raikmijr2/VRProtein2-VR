@@ -65,7 +65,7 @@ public partial class RepresentationSwitcherUI {
 
     void UpdateSurfaceBtnVisual() {
         for (int i = 0; i < repTypes.Length; i++) {
-            if (repTypes[i].code != "s" || buttons == null || buttons[i] == null) continue;
+            if (repTypes[i] != "s" || buttons == null || buttons[i] == null) continue;
             Color col = surfaceOverlayActive ? btnSurface : btnNormal;
             Image img = buttons[i].GetComponent<Image>();
             img.color = col;
@@ -242,16 +242,16 @@ public partial class RepresentationSwitcherUI {
         cb.normalColor = c;
         modeBtn.colors = cb;
         if (modeBtnLabel != null)
-            modeBtnLabel.text = applyToSelection ? "Modo: SELECCIÓN" : "Modo: TODO";
+            modeBtnLabel.text = applyToSelection ? "Mode: SELECCIÓ" : "Mode: TOT";
     }
 
     void MarkActive(string repCode) {
         for (int i = 0; i < repTypes.Length; i++) {
             if (buttons == null || buttons[i] == null) continue;
-            if (repTypes[i].code == "s") continue; // surface es toggle, gestiona su propio color
+            if (repTypes[i] == "s") continue; // surface es toggle, gestiona su propio color
 
             Image img = buttons[i].GetComponent<Image>();
-            bool isActive = repTypes[i].code == repCode;
+            bool isActive = repTypes[i] == repCode;
             img.color = isActive ? btnActive : btnNormal;
 
             ColorBlock cb = buttons[i].colors;

@@ -87,7 +87,7 @@ public partial class RepresentationSwitcherUI {
 
     IEnumerator FlashExportFeedback(string filename) {
         if (exportBtnLabel == null || exportBtnImg == null) yield break;
-        exportBtnLabel.text  = "¡Guardado!";
+        exportBtnLabel.text  = "Desat!";
         exportBtnImg.color   = new Color(0.05f, 0.70f, 0.30f, 1f);
         yield return new WaitForSeconds(2f);
         exportBtnLabel.text  = "Exportar PDB";
@@ -96,7 +96,7 @@ public partial class RepresentationSwitcherUI {
 
     IEnumerator FlashExportError() {
         if (exportBtnLabel == null || exportBtnImg == null) yield break;
-        exportBtnLabel.text  = "Error al guardar";
+        exportBtnLabel.text  = "Error en desar";
         exportBtnImg.color   = new Color(0.70f, 0.10f, 0.10f, 1f);
         yield return new WaitForSeconds(2.5f);
         exportBtnLabel.text  = "Exportar PDB";

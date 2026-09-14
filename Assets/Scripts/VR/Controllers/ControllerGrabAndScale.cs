@@ -51,10 +51,10 @@ public partial class ControllerGrabAndScale : MonoBehaviour {
 
     public ControllerGrabAndScale otherController;
 
-    [Tooltip("Velocidad a la que el joystick acerca/aleja la molécula agarrada")]
+    [Tooltip("Velocitat a la qual el joystick apropa/allunya la molècula agafada")]
     public float molDepthScrollSpeed = 2.0f;
 
-    [Tooltip("Velocidad de rotación de la selección con el joystick (grados/seg)")]
+    [Tooltip("Velocitat de rotació de la selecció amb el joystick (graus/seg)")]
     public float selectionRotSpeed = 90f;
 
     public Transform grabbedMolecule = null;

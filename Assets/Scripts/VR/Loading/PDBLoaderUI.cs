@@ -34,7 +34,7 @@ public class PDBLoaderUI : MonoBehaviour {
 
     public void OnLoadClicked() {
         string code = pdbInput != null ? pdbInput.text.Trim().ToUpper() : defaultPDBCode.ToUpper();
-        if (string.IsNullOrEmpty(code)) { SetStatus("Introduce un código PDB.", Color.yellow); return; }
+        if (string.IsNullOrEmpty(code)) { SetStatus("Introdueix un codi PDB.", Color.yellow); return; }
         StartCoroutine(LoadPDB(code));
     }
 
@@ -45,7 +45,7 @@ public class PDBLoaderUI : MonoBehaviour {
 
     IEnumerator LoadPDB(string code) {
         if (loadBtn) loadBtn.interactable = false;
-        SetStatus($"Descargando {code}...", Color.white);
+        SetStatus($"Descarregant {code}...", Color.white);
 
         // Intentar primero PDB plano (más compatible con proteínas con lligando)
         string url  = $"https://files.rcsb.org/download/{code}.pdb";
@@ -56,13 +56,13 @@ public class PDBLoaderUI : MonoBehaviour {
             yield return req.SendWebRequest();
 
             if (req.result != UnityWebRequest.Result.Success) {
-                SetStatus($"Error al descargar {code}: {req.error}", Color.red);
+                SetStatus($"Error en descarregar {code}: {req.error}", Color.red);
                 if (loadBtn) loadBtn.interactable = true;
                 yield break;
             }
         }
 
-        SetStatus($"Cargando {code}...", Color.white);
+        SetStatus($"Carregant {code}...", Color.white);
         yield return null;
 
         // Cargar sin representación por defecto para controlarla nosotros
@@ -70,13 +70,13 @@ public class PDBLoaderUI : MonoBehaviour {
         try {
             s = APIPython.load(path, readHetm: true, showDefaultRep: false, center: true);
         } catch (System.Exception e) {
-            SetStatus($"Error cargando {code}: {e.Message}", Color.red);
+            SetStatus($"Error carregant {code}: {e.Message}", Color.red);
             if (loadBtn) loadBtn.interactable = true;
             yield break;
         }
 
         if (s == null) {
-            SetStatus($"No se pudo cargar {code}.", Color.red);
+            SetStatus($"No s'ha pogut carregar {code}.", Color.red);
             if (loadBtn) loadBtn.interactable = true;
             yield break;
         }
@@ -126,9 +126,9 @@ public class PDBLoaderUI : MonoBehaviour {
             var ligResidues = new HashSet<string>();
             foreach (var a in ligandAtoms) ligResidues.Add(a.residue.name);
             string ligNames = string.Join(", ", ligResidues);
-            SetStatus($"✓ {s.name} | Proteína: {proteinAtoms.Count} át. | Ligando: {ligandAtoms.Count} át. ({ligNames})", Color.green);
+            SetStatus($"✓ {s.name} | Proteïna: {proteinAtoms.Count} àt. | Lligand: {ligandAtoms.Count} àt. ({ligNames})", Color.green);
         } else {
-            SetStatus($"✓ {s.name} | {proteinAtoms.Count} át. | Sin ligando HETATM.", Color.green);
+            SetStatus($"✓ {s.name} | {proteinAtoms.Count} àt. | Sense lligand HETATM.", Color.green);
         }
     }
 

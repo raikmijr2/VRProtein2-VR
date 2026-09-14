@@ -13,7 +13,7 @@ public partial class RepresentationSwitcherUI {
         colorSectionExpanded = !colorSectionExpanded;
         if (colorSectionGO) colorSectionGO.SetActive(colorSectionExpanded);
         if (colorToggleBtnLabel != null)
-            colorToggleBtnLabel.text = colorSectionExpanded ? "COLOREAR  ▲" : "COLOREAR  ▼";
+            colorToggleBtnLabel.text = colorSectionExpanded ? "COLOREJAR  ▲" : "COLOREJAR  ▼";
     }
 
     // Aplica colorFunc a todas las representaciones activas (itera todos los tipos de rep conocidos).
@@ -36,7 +36,7 @@ public partial class RepresentationSwitcherUI {
             if (rep.selection == null) continue;
             string sn = rep.selection.name;
             if (!seen.Add(sn)) continue;
-            foreach (var (code, _, _) in repTypes)
+            foreach (var code in repTypes)
                 colorFunc(sn, code);
         }
     }

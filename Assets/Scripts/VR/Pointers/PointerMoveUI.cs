@@ -63,7 +63,7 @@ public class PointerMoveUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public bool moveParent = false;
 
-    [Tooltip("Velocidad a la que el joystick mueve el panel hacia/desde el usuario")]
+    [Tooltip("Velocitat a la qual el joystick mou el panell cap a/des de l'usuari")]
     public float depthScrollSpeed = 1.5f;
 
     void Awake() {

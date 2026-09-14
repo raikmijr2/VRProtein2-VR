@@ -55,7 +55,7 @@ public class TrajAnimationUI : MonoBehaviour {
         string dcdDir = dcdFolderInput.text.Trim();
 
         if (string.IsNullOrEmpty(prmtop) || string.IsNullOrEmpty(dcdDir)) {
-            SetStatus("Introduce las rutas antes de cargar.", Color.yellow);
+            SetStatus("Introdueix les rutes abans de carregar.", Color.yellow);
             return;
         }
 
@@ -65,7 +65,7 @@ public class TrajAnimationUI : MonoBehaviour {
         if (!Path.IsPathRooted(dcdDir))
             dcdDir = Path.Combine(Application.persistentDataPath, dcdDir);
 
-        SetStatus("Cargando DCD...", Color.white);
+        SetStatus("Carregant DCD...", Color.white);
         StartCoroutine(LoadRoutine(prmtop, dcdDir));
     }
 
@@ -83,11 +83,11 @@ public class TrajAnimationUI : MonoBehaviour {
         }
 
         if (frames == null || frames.Count == 0) {
-            SetStatus("No se encontraron frames DCD.", Color.red);
+            SetStatus("No s'han trobat frames DCD.", Color.red);
             yield break;
         }
 
-        SetStatus($"DCD: {frames.Count} frames, {natom} átomos. Cargando PRMTOP...", Color.white);
+        SetStatus($"DCD: {frames.Count} frames, {natom} àtoms. Carregant PRMTOP...", Color.white);
         yield return null;
 
         // Load structure from PRMTOP using first frame as initial positions
@@ -100,7 +100,7 @@ public class TrajAnimationUI : MonoBehaviour {
         }
 
         if (s == null) {
-            SetStatus("No se pudo cargar el PRMTOP.", Color.red);
+            SetStatus("No s'ha pogut carregar el PRMTOP.", Color.red);
             yield break;
         }
 
@@ -111,7 +111,7 @@ public class TrajAnimationUI : MonoBehaviour {
         APIPython.setModel(s.name, 0);
 
         loadedStruct = s;
-        SetStatus($"Cargado: {s.name} | {frames.Count} frames | {natom} átomos", Color.green);
+        SetStatus($"Carregat: {s.name} | {frames.Count} frames | {natom} àtoms", Color.green);
 
         // Default representation (showSelection only affects this structure, not others)
         APIPython.showSelection(s.ToSelectionName(), "hb");

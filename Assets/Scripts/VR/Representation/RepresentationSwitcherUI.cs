@@ -15,17 +15,11 @@ namespace UMol {
 /// </summary>
 public partial class RepresentationSwitcherUI : MonoBehaviour {
 
-    // Representaciones disponibles: (código API, nombre visible). El ORDEN debe
-    // coincidir exactamente con el array "Buttons" asignado en el Inspector —
-    // MarkActive/UpdateSurfaceBtnVisual indexan buttons[i] usando repTypes[i].
-    static readonly (string code, string label, string desc)[] repTypes = {
-        ("c",      "Cartoon",    "Estructura secundaria"),
-        ("hb",     "HyperBall",  "Átomos y enlaces"),
-        ("s",      "Superficie", "Superficie molecular"),
-        ("tube",   "Tubo",       "Esqueleto backbone"),
-        ("sphere", "Esferas",    "CPK / VDW"),
-        ("l",      "Líneas",     "Wireframe simple"),
-    };
+    // Códigos de representación disponibles. El texto visible de cada botón vive
+    // en el prefab (Name/Desc). El ORDEN debe coincidir exactamente con el array
+    // "Buttons" asignado en el Inspector — MarkActive/UpdateSurfaceBtnVisual
+    // indexan buttons[i] usando repTypes[i].
+    static readonly string[] repTypes = { "c", "hb", "s", "tube", "sphere", "l" };
 
     // Colores del panel (siguen usándose en tiempo de ejecución para teñir
     // botones según el estado: activo, seleccionado, overlay, etc.)

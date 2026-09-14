@@ -76,7 +76,7 @@ public partial class DataverseProteinUI : MonoBehaviour {
         var sm = UnityMolMain.getStructureManager();
         if (sm.GetStructure(lastLoadedStructName) == null) return;
         APIPython.centerOnStructure(lastLoadedStructName, recordCommand: false);
-        SetStatus($"Centrando en {lastLoadedStructName}", Color.cyan);
+        SetStatus($"Centrant a {lastLoadedStructName}", Color.cyan);
     }
 
     public void OnSelectModeUnmodified() { SelectMode(Mode.Unmodified); }
