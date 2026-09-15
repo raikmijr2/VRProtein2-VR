@@ -493,7 +493,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8767002678365597126}
         m_TargetAssemblyTypeName: UMol.AnimationPlayerUI, Assembly-CSharp
-        m_MethodName: OnMorphClick
+        m_MethodName: OnMorphPhysicalClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1960,7 +1960,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8767002678365597126}
         m_TargetAssemblyTypeName: UMol.AnimationPlayerUI, Assembly-CSharp
-        m_MethodName: OnMorphClick
+        m_MethodName: OnMorphQualityClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
