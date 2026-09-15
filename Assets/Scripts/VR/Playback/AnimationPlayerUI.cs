@@ -68,6 +68,11 @@ public partial class AnimationPlayerUI : MonoBehaviour {
     float manualTimer = 0f;
     float morphPlayheadFrame = 0f;
 
+    // DIAG temporal: se muestran en el propio FrameLabel para no depender de leer la
+    // consola en el headset — quitar junto con el resto del diagnóstico.
+    float  lastSetModelMs = 0f;
+    string lastMorphLabel = "-";
+
     bool _morphActive = false;
 
     int _repSkipCounter = 0;
@@ -156,10 +161,7 @@ public partial class AnimationPlayerUI : MonoBehaviour {
                 if (targetFrame != anim.currentFrameId) {
                     float _t0 = Time.realtimeSinceStartup;
                     anim.setModel(targetFrame);
-                    float _ms = (Time.realtimeSinceStartup - _t0) * 1000f;
-                    Debug.Log("[DIAG-morph] setModel(" + targetFrame + "/" + totalFrames + ") took " + _ms.ToString("F1") +
-                               "ms | speed=" + speed + " | dt=" + Time.deltaTime.ToString("F3") +
-                               " | playhead=" + morphPlayheadFrame.ToString("F2"));
+                    lastSetModelMs = (Time.realtimeSinceStartup - _t0) * 1000f;
                 }
             } else {
                 morphPlayheadFrame = anim.currentFrameId; // stay in sync while paused/stepped manually
@@ -191,7 +193,11 @@ public partial class AnimationPlayerUI : MonoBehaviour {
 
         int cur = GetCurrentFrame(anim);
         int tot = GetTotalFrames(anim);
-        if (frameLabel) frameLabel.text = $"Frame {cur + 1} / {tot}";
+        if (frameLabel) {
+            frameLabel.text = _morphActive
+                ? $"Frame {cur + 1} / {tot}  [{lastMorphLabel} · {lastSetModelMs:F1}ms]"
+                : $"Frame {cur + 1} / {tot}";
+        }
 
         bool playing = IsCurrentlyPlaying(anim);
         Color playColor = playing ? btnGreen : btnNormal;

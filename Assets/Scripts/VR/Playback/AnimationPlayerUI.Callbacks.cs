@@ -101,16 +101,15 @@ public partial class AnimationPlayerUI {
         if (s.trajPlayer   != null) s.trajPlayer.play   = false;
         if (s.modelsPlayer != null) s.modelsPlayer.play = false;
 
-        int  _prevFrames  = s.modelFrames != null ? s.modelFrames.Count : -1;
-        bool _prevTrajMode = s.trajectoryMode;
+        string modeName = mode == 0 ? "LINEAL" : mode == 1 ? "RÍGID" : "FÍSIC";
+        if (frameLabel) frameLabel.text = "Generant " + modeName + "...";
+
         float _genT0 = Time.realtimeSinceStartup;
         bool ok = mode == 0 ? MorphGenerator.Generate(s)
                 : mode == 1 ? MorphGeneratorQuality.Generate(s)
                 :             MorphGeneratorPhysical.Generate(s);
-        Debug.Log("[DIAG-morph] LaunchMorph(mode=" + mode + ") Generate() took " +
-                   ((Time.realtimeSinceStartup - _genT0) * 1000f).ToString("F1") + "ms | ok=" + ok +
-                   " | framesBefore=" + _prevFrames + " -> framesAfter=" + (s.modelFrames != null ? s.modelFrames.Count : -1) +
-                   " | trajectoryModeBefore=" + _prevTrajMode + " | wasMorphActive=" + _morphActive);
+        float genMs = (Time.realtimeSinceStartup - _genT0) * 1000f;
+        lastMorphLabel = modeName + " gen:" + genMs.ToString("F0") + "ms";
         if (!ok) {
             if (frameLabel) frameLabel.text = "Necessites ≥ 2 frames de trajectòria";
             return;
