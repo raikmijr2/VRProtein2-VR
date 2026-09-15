@@ -68,6 +68,9 @@ public partial class AnimationPlayerUI : MonoBehaviour {
     float manualTimer = 0f;
     float morphPlayheadFrame = 0f;
 
+    // DIAG temporal
+    string lastMorphAmplitude = "-";
+
     bool _morphActive = false;
 
     int _repSkipCounter = 0;
@@ -184,7 +187,11 @@ public partial class AnimationPlayerUI : MonoBehaviour {
 
         int cur = GetCurrentFrame(anim);
         int tot = GetTotalFrames(anim);
-        if (frameLabel) frameLabel.text = $"Frame {cur + 1} / {tot}";
+        if (frameLabel) {
+            frameLabel.text = _morphActive
+                ? $"Frame {cur + 1} / {tot}  [{lastMorphAmplitude}]"
+                : $"Frame {cur + 1} / {tot}";
+        }
 
         bool playing = IsCurrentlyPlaying(anim);
         Color playColor = playing ? btnGreen : btnNormal;
