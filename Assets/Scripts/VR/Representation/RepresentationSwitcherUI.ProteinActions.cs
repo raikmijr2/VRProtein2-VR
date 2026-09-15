@@ -66,14 +66,18 @@ public partial class RepresentationSwitcherUI {
             sb.Append(PDBReader.Write(sel, writeModel: false, writeHET: true, overridedPos: positions));
         }
 
-        string timestamp = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        string filename  = "vrprotein_" + timestamp + ".pdb";
-        string path      = Path.Combine(Application.persistentDataPath, filename);
+        string timestamp  = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string filename   = "vrprotein_" + timestamp + ".pdb";
+        // Carpeta fija dentro de los datos de la app, para que el cliente sepa
+        // siempre dónde buscar: <persistentDataPath>/exports_pdbs/
+        string exportDir  = Path.Combine(Application.persistentDataPath, "exports_pdbs");
+        string path       = Path.Combine(exportDir, filename);
 
         // BUG FIX: File.WriteAllText no tenía try/catch — un fallo de escritura (permisos,
         // disco lleno en el headset) tiraba una excepción sin capturar y el usuario no veía
         // ningún feedback de que la exportación había fallado.
         try {
+            Directory.CreateDirectory(exportDir);
             File.WriteAllText(path, sb.ToString());
         } catch (System.Exception) {
             StartCoroutine(FlashExportError());
