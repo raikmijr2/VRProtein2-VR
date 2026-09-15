@@ -68,11 +68,6 @@ public partial class AnimationPlayerUI : MonoBehaviour {
     float manualTimer = 0f;
     float morphPlayheadFrame = 0f;
 
-    // DIAG temporal: se muestran en el propio FrameLabel para no depender de leer la
-    // consola en el headset — quitar junto con el resto del diagnóstico.
-    float  lastSetModelMs = 0f;
-    string lastMorphLabel = "-";
-
     bool _morphActive = false;
 
     int _repSkipCounter = 0;
@@ -158,11 +153,7 @@ public partial class AnimationPlayerUI : MonoBehaviour {
                 } else {
                     targetFrame = Mathf.Min(Mathf.FloorToInt(morphPlayheadFrame), totalFrames - 1);
                 }
-                if (targetFrame != anim.currentFrameId) {
-                    float _t0 = Time.realtimeSinceStartup;
-                    anim.setModel(targetFrame);
-                    lastSetModelMs = (Time.realtimeSinceStartup - _t0) * 1000f;
-                }
+                if (targetFrame != anim.currentFrameId) anim.setModel(targetFrame);
             } else {
                 morphPlayheadFrame = anim.currentFrameId; // stay in sync while paused/stepped manually
             }
@@ -193,11 +184,7 @@ public partial class AnimationPlayerUI : MonoBehaviour {
 
         int cur = GetCurrentFrame(anim);
         int tot = GetTotalFrames(anim);
-        if (frameLabel) {
-            frameLabel.text = _morphActive
-                ? $"Frame {cur + 1} / {tot}  [{lastMorphLabel} · {lastSetModelMs:F1}ms]"
-                : $"Frame {cur + 1} / {tot}";
-        }
+        if (frameLabel) frameLabel.text = $"Frame {cur + 1} / {tot}";
 
         bool playing = IsCurrentlyPlaying(anim);
         Color playColor = playing ? btnGreen : btnNormal;

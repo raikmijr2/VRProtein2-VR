@@ -101,15 +101,9 @@ public partial class AnimationPlayerUI {
         if (s.trajPlayer   != null) s.trajPlayer.play   = false;
         if (s.modelsPlayer != null) s.modelsPlayer.play = false;
 
-        string modeName = mode == 0 ? "LINEAL" : mode == 1 ? "RÍGID" : "FÍSIC";
-        if (frameLabel) frameLabel.text = "Generant " + modeName + "...";
-
-        float _genT0 = Time.realtimeSinceStartup;
         bool ok = mode == 0 ? MorphGenerator.Generate(s)
                 : mode == 1 ? MorphGeneratorQuality.Generate(s)
                 :             MorphGeneratorPhysical.Generate(s);
-        float genMs = (Time.realtimeSinceStartup - _genT0) * 1000f;
-        lastMorphLabel = modeName + " gen:" + genMs.ToString("F0") + "ms";
         if (!ok) {
             if (frameLabel) frameLabel.text = "Necessites ≥ 2 frames de trajectòria";
             return;
