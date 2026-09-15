@@ -109,6 +109,13 @@ public partial class AnimationPlayerUI {
             return;
         }
 
+        // Reinicia siempre a la velocidad por defecto al lanzar un morph nuevo -
+        // si no, hereda lo que quedara puesto (p.ej. 30 fps, el máximo) y los
+        // botones de velocidad parecen no hacer nada porque ya no hay margen
+        // para subir.
+        speedIdx = 4;
+        if (speedLabel) speedLabel.text = SpeedText();
+
         s.setModel(0);
         _morphActive = true;
         manualPlay   = true;
