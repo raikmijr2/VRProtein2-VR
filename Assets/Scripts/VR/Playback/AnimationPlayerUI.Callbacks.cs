@@ -109,23 +109,6 @@ public partial class AnimationPlayerUI {
             return;
         }
 
-        // DIAG temporal: amplitud real del morph generado, para verificar si los
-        // frames intermedios realmente se mueven o si casi todo el desplazamiento
-        // esta concentrado entre el ultimo frame y el primero (el salto del loop).
-        if (frameLabel != null && s.modelFrames != null && s.modelFrames.Count > 1) {
-            var f0    = s.modelFrames[0];
-            var fMid  = s.modelFrames[s.modelFrames.Count / 2];
-            var fLast = s.modelFrames[s.modelFrames.Count - 1];
-            int n = Mathf.Min(f0.Length, fLast.Length);
-            float maxD0Mid = 0f, maxD0Last = 0f, maxDMidLast = 0f;
-            for (int i = 0; i < n; i++) {
-                maxD0Mid    = Mathf.Max(maxD0Mid,    Vector3.Distance(f0[i], fMid[i]));
-                maxD0Last   = Mathf.Max(maxD0Last,   Vector3.Distance(f0[i], fLast[i]));
-                maxDMidLast = Mathf.Max(maxDMidLast, Vector3.Distance(fMid[i], fLast[i]));
-            }
-            lastMorphAmplitude = $"0→mid:{maxD0Mid:F2} mid→last:{maxDMidLast:F2} 0→last:{maxD0Last:F2}";
-        }
-
         s.setModel(0);
         _morphActive = true;
         manualPlay   = true;
