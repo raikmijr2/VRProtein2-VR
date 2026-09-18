@@ -33,6 +33,7 @@ public class PDBLoaderUI : MonoBehaviour {
     // ── Carga ────────────────────────────────────────────────────────────────
 
     public void OnLoadClicked() {
+        Debug.Log("[DIAG-TEMP] OnLoadClicked() invocado"); // TEMPORAL - quitar tras diagnosticar
         VRPanelKeyboardTrigger.HideKeyboard();
         string code = pdbInput != null ? pdbInput.text.Trim().ToUpper() : defaultPDBCode.ToUpper();
         if (string.IsNullOrEmpty(code)) { SetStatus("Introdueix un codi PDB.", Color.yellow); return; }

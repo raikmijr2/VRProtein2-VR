@@ -962,6 +962,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 22242471}
   m_CullTransparentMesh: 0
+--- !u!1 &23067927
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 23067929}
+  - component: {fileID: 23067928}
+  m_Layer: 0
+  m_Name: DataverseUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &23067928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23067927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a175c653d174dda4f96063e47dd7385c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UMol.DataverseProteinUI
+  statusText: {fileID: 0}
+  progressText: {fileID: 0}
+  downloadBtn: {fileID: 0}
+  gotoBtn: {fileID: 0}
+  modeButtons:
+  - {fileID: 0}
+  - {fileID: 0}
+  runButtons:
+  - {fileID: 0}
+  - {fileID: 0}
+  dcdCountLabel: {fileID: 0}
+  dcdMinusHold: {fileID: 0}
+  dcdPlusHold: {fileID: 0}
+--- !u!4 &23067929
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23067927}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.77276, y: -0, z: -0.68487}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &27961053
 GameObject:
   m_ObjectHideFlags: 0
@@ -2050,6 +2107,58 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 30.000011, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &49759276
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 49759278}
+  - component: {fileID: 49759277}
+  m_Layer: 0
+  m_Name: RepSwitcherPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &49759277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 49759276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 034df24511333a04cb7ed99627b87fbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UMol.RepresentationSwitcherUI
+  buttons: []
+  modeBtn: {fileID: 0}
+  modeBtnImg: {fileID: 0}
+  modeBtnLabel: {fileID: 0}
+  exportBtnLabel: {fileID: 0}
+  exportBtnImg: {fileID: 0}
+  colorSectionGO: {fileID: 0}
+  colorToggleBtnLabel: {fileID: 0}
+--- !u!4 &49759278
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 49759276}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.93955, y: -0, z: 3.53497}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &49880765
 GameObject:
   m_ObjectHideFlags: 0
@@ -33957,6 +34066,50 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!1 &680191985
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 680191987}
+  - component: {fileID: 680191986}
+  m_Layer: 0
+  m_Name: EffectsVRUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &680191986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680191985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ff85aa851fc13b4da6274c9ff8cad14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UMol.EffectsVRUI
+--- !u!4 &680191987
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680191985}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.20762, y: 0.14533, z: 0.20762}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &680720561
 GameObject:
   m_ObjectHideFlags: 0
@@ -51865,6 +52018,56 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -0.5}
   m_SizeDelta: {x: 0, y: -1}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1031826722
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1031826723}
+  - component: {fileID: 1031826724}
+  m_Layer: 0
+  m_Name: EffectsPanelVR
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1031826723
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031826722}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.20762, y: 0.14533, z: 0.20762}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1031826724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031826722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c8675f127ace7e459a969a1a48a4191, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UMol.EffectsPanelVR
+  lightSlider: {fileID: 0}
+  ambientSlider: {fileID: 0}
+  shadowSlider: {fileID: 0}
+  lightValueText: {fileID: 0}
+  ambientValueText: {fileID: 0}
+  shadowValueText: {fileID: 0}
 --- !u!1 &1032324549
 GameObject:
   m_ObjectHideFlags: 0
@@ -53837,6 +54040,71 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -0.5}
   m_SizeDelta: {x: 0, y: -1}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1080264788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1080264790}
+  - component: {fileID: 1080264789}
+  m_Layer: 0
+  m_Name: AnimationPlayerUi
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1080264789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080264788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51f271260d5a9cc49ba017d72cfee7e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UMol.AnimationPlayerUI
+  structLabel: {fileID: 0}
+  structIndexLabel: {fileID: 0}
+  frameLabel: {fileID: 0}
+  speedLabel: {fileID: 0}
+  playBtnLabel: {fileID: 0}
+  loopBtnLabel: {fileID: 0}
+  playBtnImg: {fileID: 0}
+  loopBtnImg: {fileID: 0}
+  playBtn: {fileID: 0}
+  loopBtn: {fileID: 0}
+  structPrevBtn: {fileID: 0}
+  structNextBtn: {fileID: 0}
+  speedDownHold: {fileID: 0}
+  speedUpHold: {fileID: 0}
+  morphBtn: {fileID: 0}
+  morphBtnImg: {fileID: 0}
+  morphBtnLabel: {fileID: 0}
+  morphQualityBtn: {fileID: 0}
+  morphQualityBtnImg: {fileID: 0}
+  morphPhysicalBtn: {fileID: 0}
+  morphPhysicalBtnImg: {fileID: 0}
+--- !u!4 &1080264790
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080264788}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.13770384, z: 0, w: 0.99047345}
+  m_LocalPosition: {x: 1.93955, y: -0, z: 3.53497}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 15.83, z: 0}
 --- !u!1 &1080741641
 GameObject:
   m_ObjectHideFlags: 0
@@ -82390,6 +82658,55 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 30.000011, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1654257252
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1654257254}
+  - component: {fileID: 1654257253}
+  m_Layer: 0
+  m_Name: SequenceSelector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1654257253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654257252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f232ea5faf8874fb6039e7a5ca1065, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UMol.SequenceSelectorUI
+  fromInput: {fileID: 0}
+  toInput: {fileID: 0}
+  statusText: {fileID: 0}
+  rangeLabel: {fileID: 0}
+  numKeyboardGO: {fileID: 0}
+--- !u!4 &1654257254
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654257252}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.22412, y: -0, z: -2.10461}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1658688060
 GameObject:
   m_ObjectHideFlags: 0
@@ -118363,6 +118680,12 @@ SceneRoots:
   - {fileID: 457620954}
   - {fileID: 854752585}
   - {fileID: 1991462790}
+  - {fileID: 49759278}
+  - {fileID: 1080264790}
+  - {fileID: 680191987}
+  - {fileID: 1031826723}
+  - {fileID: 23067929}
+  - {fileID: 1654257254}
   - {fileID: 7796999639603996009}
   - {fileID: 7540945360098008714}
   - {fileID: 6307233418477948370}

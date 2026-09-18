@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using HTC.UnityPlugin.Pointer3D;
 
 namespace UMol {
